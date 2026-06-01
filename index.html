@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
+<title>🚨 Guía de Supervivencia: Cálculo Integral</title>
+<!-- Tailwind CSS para diseño moderno -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Iconos Lucide para la UI -->
+<script src="https://unpkg.com/lucide@0.383.0/dist/umd/lucide.min.js"></script>
+<!-- Configuración y carga de MathJax para renderizar LaTeX dinámico -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    options: {
+      enableMenu: false,
+      skipHtmlTags: {'[-]': ['code', 'pre']} // Remover restricciones para mayor seguridad
+    }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root {
+    --bg: #0b0a12;
+    --surface: #131124;
+    --surface2: #1e1b3a;
+    --border: #2d2954;
+    --accent: #7c6ef7;
+    --accent-glow: rgba(124, 110, 247, 0.35);
+    --accent2: #3cd090;
+    --warn: #e28743;
+    --danger: #e85a5a;
+    --text: #eae8f5;
+    --muted: #827e9e;
+  }
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+    user-select: none; /* Evita que el texto se seleccione por error al hacer swipes rápidos */
+  }
+  .select-all {
+    user-select: all !important;
+  }
+  .app-container {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 16px 12px 100px;
+  }
+  @media(min-width: 640px) {
+    .app-container {
+      padding: 24px 16px 100px;
+    }
+  }
+  .custom-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .custom-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 20px var(--accent-glow);
+  }
+  .glow-btn {
+    transition: all 0.2s ease;
+  }
+  .glow-btn:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  /* Estilización de scroll */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+  /* Ocultar barra de scroll para pestañas en móviles si es necesario, pero mantener funcionalidad táctil */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<div class="app-container">
+  
+  <!-- CABECERA -->
+  <header class="flex justify-between items-center mb-5">
+    <div class="pr-2">
+      <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white flex flex-wrap items-center gap-1.5">
+        <span class="px-2 py-0.5 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-[10px] md:text-xs font-bold uppercase tracking-wider">🚨 Supervivencia</span>
+        <span>Integrales PRO</span>
+      </h1>
+      <p class="text-[11px] text-red-400/90 font-medium mt-1 flex items-center gap-1">
+        <i data-lucide="clock" class="w-3.5 h-3.5 flex-shrink-0"></i> Examen en 5 horas: Enfoque de Reconocimiento Acelerado
+      </p>
+    </div>
+  </header>
+
+  <!-- PESTAÑA PRINCIPAL: HOME (MENU DE TEMAS) -->
+  <main id="home-screen" class="space-y-5">
+    <!-- CRONOGRAMA DE IMPACTO RÁPIDO -->
+    <div class="bg-red-950/20 p-3.5 md:p-4 border border-red-900/30 rounded-2xl">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-[10px] md:text-xs text-red-300 font-bold tracking-wider uppercase flex items-center gap-1">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400 animate-bounce"></i> Plan de Choque de 5 Horas
+        </span>
+        <span id="progress-label" class="text-[11px] md:text-xs font-bold text-emerald-400">0 / 14 completados</span>
+      </div>
+      
+      <!-- Timeline visual responsive -->
+      <div class="grid grid-cols-2 xs:grid-cols-4 gap-1.5 text-[9px] md:text-[10px] text-center font-bold text-slate-400 mb-3.5">
+        <div class="p-1.5 bg-slate-900 rounded border border-slate-800"><span class="text-amber-400 block text-[8px] uppercase">Hora 1</span>Hacks visuales</div>
+        <div class="p-1.5 bg-slate-900 rounded border border-slate-800"><span class="text-amber-400 block text-[8px] uppercase">Horas 2-3</span>Práctica Local</div>
+        <div class="p-1.5 bg-slate-900 rounded border border-slate-800"><span class="text-amber-400 block text-[8px] uppercase">Hora 4</span>Detectar fallas</div>
+        <div class="p-1.5 bg-slate-900 rounded border border-slate-800"><span class="text-amber-400 block text-[8px] uppercase">Hora 5</span>Repaso final</div>
+      </div>
+
+      <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden">
+        <div id="main-progress" class="bg-gradient-to-r from-red-500 via-amber-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <!-- LISTADO DE TEMAS -->
+    <div id="topic-list" class="space-y-2.5"></div>
+  </main>
+
+  <!-- PESTAÑA DE CASO / EJERCICIO -->
+  <section id="case-screen" class="hidden space-y-4">
+    <!-- Botón de regreso -->
+    <button onclick="goHome()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-[11px] text-slate-300 flex items-center gap-1.5 transition">
+      <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Volver al Menú
+    </button>
+
+    <!-- Sub-pestañas para los casos del tema seleccionado (Scrollable horizontalmente en teléfonos) -->
+    <div id="case-tabs" class="flex gap-1.5 overflow-x-auto pb-1.5 no-scrollbar scroll-smooth snap-x"></div>
+
+    <!-- Información Teórica de Supervivencia -->
+    <div id="case-theory" class="space-y-3"></div>
+
+    <!-- ÁREA DEL EJERCICIO -->
+    <div id="exercise-card" class="custom-card p-4 md:p-5 relative overflow-hidden bg-slate-900/40">
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-amber-500 flex items-center gap-1">
+          <i data-lucide="target" class="w-3.5 h-3.5"></i> Pon a prueba el Hack
+        </span>
+        <span id="source-badge" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[9px] font-bold uppercase">
+          Local
+        </span>
+      </div>
+
+      <!-- El Problema en pantalla (LaTeX con scroll horizontal si desborda) -->
+      <div id="exercise-box" class="min-h-[100px] flex flex-col justify-center items-center py-4 px-3 border border-dashed border-slate-700/60 bg-slate-950/60 rounded-xl mb-4 w-full overflow-x-auto">
+        <div id="problem-text" class="text-lg md:text-2xl font-semibold text-center tracking-wide text-white select-all w-full font-mono">
+          $$\int x \sin(x) dx$$
+        </div>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN PARA EJERCICIOS (Responsive grid) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3.5">
+        <!-- Generar Localmente -->
+        <button onclick="loadLocalExercise()" class="w-full px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold rounded-xl text-xs flex justify-center items-center gap-1.5 transition glow-btn">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-400"></i> Otro ejercicio (Local)
+        </button>
+        <!-- Generar con Gemini AI -->
+        <button onclick="loadGeminiExercise()" class="w-full px-3 py-2.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-semibold rounded-xl text-xs flex justify-center items-center gap-1.5 transition glow-btn shadow-lg shadow-red-950/30">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i> Ejercicio con IA ✨
+        </button>
+      </div>
+
+      <!-- Botón para ver solución -->
+      <button onclick="toggleSolution()" id="sol-toggle" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-medium rounded-xl text-xs flex justify-center items-center gap-1.5 transition">
+        <i data-lucide="eye" class="w-4 h-4"></i> Mostrar solución paso a paso
+      </button>
+
+      <!-- Panel de Solución Desplegable (LaTeX activado, responsive) -->
+      <div id="sol-content" class="hidden mt-4 space-y-3.5 pt-4 border-t border-slate-800 w-full overflow-hidden"></div>
+    </div>
+
+    <!-- BOTONES DE NAVEGACIÓN -->
+    <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5 py-2">
+      <button id="mark-btn" onclick="markDone()" class="px-4 py-2.5 rounded-xl border font-bold text-xs transition flex justify-center items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border-slate-800 text-slate-400 w-full sm:w-auto">
+        <i data-lucide="check" class="w-4 h-4"></i> Marcar como estudiado
+      </button>
+      <button onclick="goNext()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs flex justify-center items-center gap-1.5 transition glow-btn">
+        Siguiente caso <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- Sugerencia sutil de gestos para pantallas móviles -->
+    <div class="text-center text-[10px] text-slate-500 mt-1 hidden xs:block">
+      <span class="inline-flex items-center gap-1 bg-slate-900/40 px-2.5 py-1 rounded-full border border-slate-850">
+        <i data-lucide="smartphone" class="w-3 h-3 text-indigo-400"></i> Desliza horizontalmente la pantalla o usa las flechas ◄ / ► del teclado
+      </span>
+    </div>
+
+    <!-- SECCIÓN DE DETECTOR MANUAL -->
+    <div class="border-t border-slate-800/80 pt-5 mt-5">
+      <div class="bg-slate-950 p-4 border border-slate-850 rounded-2xl w-full">
+        <h4 class="text-xs font-bold tracking-wider uppercase text-slate-400 mb-2 flex items-center gap-1.5">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-indigo-400"></i> ¿Duda con un ejercicio de tu tarea?
+        </h4>
+        <p class="text-[11px] text-slate-500 mb-3">Escríbela abajo y la app te dirá qué método aplicar y por qué.</p>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <div class="flex-1 flex items-center bg-slate-900 border border-slate-800 focus-within:border-indigo-500 rounded-xl px-3 transition w-full">
+            <span class="font-mono text-indigo-400 text-lg mr-1.5 font-bold">∫</span>
+            <input type="text" id="manual-input" placeholder="ej: x^2 * ln(x) o sqrt(9-x^2)" class="w-full bg-transparent border-none text-xs text-white outline-none py-2.5 font-mono" />
+            <span class="font-mono text-slate-500 text-xs ml-1.5">dx</span>
+          </div>
+          <button onclick="analyzeManual()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl text-xs transition w-full sm:w-auto flex justify-center items-center">
+            Analizar
+          </button>
+        </div>
+        <div id="manual-result" class="hidden mt-3 p-3 bg-slate-900 border border-slate-800 rounded-xl space-y-2 w-full overflow-x-auto"></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ===================== HELPER SEGURO PARA LUCIDE ===================== */
+function safeCreateIcons() {
+  if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+    lucide.createIcons();
+  }
+}
+
+/* ===================== CONTENIDO ACELERADO DE SUPERVIVENCIA ===================== */
+const TOPICS = [
+  {
+    id: "partes",
+    emoji: "✂️",
+    title: "Integración por Partes",
+    sub: "Caso I y II",
+    color: "#7c6ef7",
+    cases: [
+      {
+        tag: "Caso I · ILATE ↺",
+        title: "Partes simple o repetida",
+        hack: "Ves una **multiplicación de dos funciones incompatibles** que no se simplifican ni una es la derivada de la otra de forma directa (ej. $x^2 \\cos(x)$ o $x \\ln(x)$).",
+        danger: "Elegir mal la variable $u$. Si erras aquí, la integral se complicará infinitamente. **¡Memoriza la prioridad ILATE de arriba a abajo!**",
+        tip: "Utiliza el orden jerárquico de **ILATE** para decidir quién será $u$. La primera letra que encuentres de izquierda a derecha (o de arriba a abajo en la lista) se convertirá en tu $u$.",
+        showIlateList: true, 
+        formula: "$$\\int u dv = u \\cdot v - \\int v du$$",
+        steps: [
+          "Elige $u$ usando el orden de la lista ILATE. El resto de la expresión será $dv$.",
+          "Deriva $u$ para obtener $du$. Integra $dv$ para obtener $v$.",
+          "Sustituye en la mnemotecnia: *Un Día Vi = Una Vaca Sin cola Vestida De Uniforme*.",
+          "Resuelve la integral restante. Si aún tiene un producto de tipos incompatibles, aplica partes de nuevo."
+        ],
+        gen: (caseKey) => genPartes1(caseKey)
+      },
+      {
+        tag: "Caso II · Cíclico",
+        title: "e\u1d6a \u00d7 Trigonom\u00e9trica",
+        hack: "Ves una exponencial multiplicándose con una trigonométrica directa, típicamente $\\int e^x \\cos(x) dx$. Ambas funciones son infinitas al derivarlas o integrarlas.",
+        danger: "Pensar que cometiste un error porque la integral parece no terminar nunca. ¡No te detengas! Es una trampa cíclica que se resuelve con álgebra.",
+        tip: "Aplica partes **dos veces consecutivas** manteniendo el mismo criterio de selección de $u$. En la segunda vuelta, tu integral original reaparecerá. Despéjala como una incógnita $I$.",
+        formula: "$$I = \\text{expr} - k \\cdot I \\implies (1+k)I = \\text{expr} \\implies I = \\frac{\\text{expr}}{1+k} + C$$",
+        steps: [
+          "Nombra la integral original con la letra $I$.",
+          "Aplica partes la primera vez (ej. haciendo $u$ la trigonométrica).",
+          "Aplica partes la segunda vez sobre la nueva integral (mantén $u$ la trigonométrica).",
+          "Agrupa las variables $I$ en el lado izquierdo y despeja dividiendo."
+        ],
+        gen: (caseKey) => genPartes2(caseKey)
+      }
+    ]
+  },
+  {
+    id: "trig",
+    emoji: "📐",
+    title: "Integrales Trigonom\u00e9tricas",
+    sub: "Casos I al VI",
+    color: "#3cd090",
+    cases: [
+      {
+        tag: "Caso I",
+        title: "Seno/Coseno \u2014 cos IMPAR",
+        hack: "Multiplicación de senos y cosenos donde el **Coseno tiene un exponente impar** (ej. $\\cos^3(x)$ o $\\cos^5(x)$).",
+        danger: "Intentar sustituir de golpe. Debes preparar la integral primero aislando un solo coseno.",
+        tip: "**Róbale un coseno** al exponente impar para formar el $du$. El resto de los cosenos (que ahora son pares) conviértelos usando la identidad: $\\cos^2(x) = 1 - \\sin^2(x)$.",
+        formula: "$$\\cos^2(x) = 1 - \\sin^2(x) \\quad \\rightarrow \\quad u = \\sin(x), \\, du = \\cos(x)dx$$",
+        steps: [
+          "Separa un factor $\\cos(x)$ y llévalo al final junto al $dx$.",
+          "Convierte las potencias pares restantes de coseno a senos.",
+          "Aplica el cambio $u = \\sin(x)$, de modo que tu coseno aislado sea el $du$.",
+          "Integra el polinomio resultante y regresa a la variable $x$."
+        ],
+        gen: (caseKey) => genTrigI(caseKey)
+      },
+      {
+        tag: "Caso II",
+        title: "Seno/Coseno \u2014 sin IMPAR",
+        hack: "Multiplicación de senos y cosenos donde el **Seno tiene un exponente impar** (ej. $\\sin^3(x)$ o $\\sin^5(x)$).",
+        danger: "Olvidar el signo negativo en el diferencial: $\\frac{d}{dx}(\\cos(x)) = -\\sin(x)$. Ese menos altera todo el resultado.",
+        tip: "**Róbale un seno** al exponente impar para formar el $du$. Convierte los demás senos a cosenos.",
+        formula: "$$\\sin^2(x) = 1 - \\cos^2(x) \\quad \\rightarrow \\quad u = \\cos(x), \\, du = -\\sin(x)dx$$",
+        steps: [
+          "Separa un factor $\\sin(x)$ y colócalo al final con el $dx$.",
+          "Convierte el resto de los senos usando la identidad pitagórica.",
+          "Sustituye $u = \\cos(x)$. Saca el signo negativo fuera de la integral.",
+          "Resuelve la integral de potencias y multiplica por el negativo."
+        ],
+        gen: (caseKey) => genTrigII(caseKey)
+      },
+      {
+        tag: "Caso III",
+        title: "Seno/Coseno \u2014 Ambos pares",
+        hack: "Multiplicación de senos y cosenos donde **TODOS los exponentes son números pares** (ej. $\\sin^2(x)$ o $\\cos^4(x)$). No hay impares para robar.",
+        danger: "El álgebra se expande rápido. Mantén el orden al multiplicar binomios.",
+        tip: "Aquí no puedes hacer sustitución simple. Debes usar las **fórmulas de ángulo doble** para eliminar los exponentes cuadrados.",
+        formula: "$$\\sin^2(x) = \\frac{1 - \\cos(2x)}{2} \\quad \\Big| \\quad \\cos^2(x) = \\frac{1 + \\cos(2x)}{2}$$",
+        steps: [
+          "Reemplaza todos los términos cuadráticos con su respectiva fórmula reductora.",
+          "Multiplica y expande el polinomio resultante.",
+          "Si vuelve a salir un término cuadrático (ej. $\\cos^2(2x)$), aplícale la fórmula otra vez duplicando de nuevo el ángulo a $4x$.",
+          "Integra los términos simples directamente."
+        ],
+        gen: (caseKey) => genTrigIII(caseKey)
+      },
+      {
+        tag: "Caso IV",
+        title: "Secante PAR",
+        hack: "Integrales con tangentes y secantes donde **la Secante tiene exponente par** (ej. $\\sec^4(x)$).",
+        danger: "Confundir las identidades. Para este caso la sustitución base es $u = \\tan(x)$.",
+        tip: "**Separa un $\\sec^2(x)$** para que actúe de $du$. El resto de secantes (pares) conviértelas a tangentes usando la identidad pitagórica.",
+        formula: "$$\\sec^2(x) = 1 + \\tan^2(x) \\quad \\rightarrow \\quad u = \\tan(x), \\, du = \\sec^2(x)dx$$",
+        steps: [
+          "Aísla un factor $\\sec^2(x)$ al final del integrando.",
+          "Usa la identidad para cambiar las demás secantes a tangentes.",
+          "Aplica el cambio de variable $u = \\tan(x)$.",
+          "Resuelve el polinomio en términos de $u$."
+        ],
+        gen: (caseKey) => genTrigIV(caseKey)
+      },
+      {
+        tag: "Caso V",
+        title: "Tangente IMPAR",
+        hack: "Integrales con tangentes y secantes donde **la Tangente tiene exponente impar** (ej. $\\tan^3(x)$).",
+        danger: "Dejar una secante suelta sin considerar su derivada. El diferencial completo debe ser $\\sec(x)\\tan(x)dx$.",
+        tip: "**Roba un factor de cada una** para armar el combo diferencial $[\\sec(x)\\tan(x)dx]$. Todo lo demás transfórmalo a secantes.",
+        formula: "$$\\tan^2(x) = \\sec^2(x) - 1 \\quad \\rightarrow \\quad u = \\sec(x), \\, du = \\sec(x)\\tan(x)dx$$",
+        steps: [
+          "Separa un factor $\\tan(x)$ y un factor $\\sec(x)$ y ponlos juntos al final.",
+          "Convierte el resto de tangentes pares a secantes usando la identidad.",
+          "Aplica la sustitución $u = \\sec(x)$.",
+          "Integra las potencias simples en $u$."
+        ],
+        gen: (caseKey) => genTrigV(caseKey)
+      },
+      {
+        tag: "Caso VI",
+        title: "Argumentos distintos",
+        hack: "Multiplicación de senos y cosenos con **ángulos diferentes adentro**, por ejemplo: $\\int \\sin(5x)\\cos(2x) dx$.",
+        danger: "Tratar de hacer sustitución directa. Es imposible porque los argumentos no coinciden.",
+        tip: "Convierte el producto en una suma simple usando las identidades trigonométricas de producto a suma.",
+        formula: "$$\\sin(A)\\cos(B) = \\frac{\\sin(A-B) + \\sin(A+B)}{2}$$",
+        steps: [
+          "Identifica el caso (seno-coseno, seno-seno o coseno-coseno) y define $A$ y $B$.",
+          "Aplica la fórmula para desarmar el producto en una suma.",
+          "Simplifica los ángulos resultantes operando las constantes.",
+          "Integra cada término por separado de forma inmediata."
+        ],
+        gen: (caseKey) => genTrigVI(caseKey)
+      }
+    ]
+  },
+  {
+    id: "sust",
+    emoji: "🔺",
+    title: "Sustituci\u00f3n Trigonom\u00e9trica",
+    sub: "3 Casos de Ra\u00edces",
+    color: "#e28743",
+    cases: [
+      {
+        tag: "Caso I · sin",
+        title: "Ra\u00edz de N\u00famero menos X\u00b2",
+        hack: "Ves una raíz cuadrada fea con la estructura **Constante menos Variable** (ej. $\\sqrt{a^2 - x^2}$). No hay una variable fuera para hacer sustitución simple.",
+        danger: "Olvidar derivar el cambio al sustituir el $dx$ original. ¡$dx$ debe cambiar a términos de $d\\theta$!",
+        tip: "Relaciona la raíz con el cateto de un triángulo donde la hipotenusa es $a$. El cambio correcto utiliza el **Seno**.",
+        formula: "$$x = a\\sin(\\theta), \\, dx = a\\cos(\\theta)d\\theta, \\, \\sqrt{a^2-x^2} = a\\cos(\\theta)$$",
+        steps: [
+          "Determina el valor de $a$ (la raíz cuadrada de tu número constante).",
+          "Efectúa el cambio $x = a\\sin(\\theta)$ y calcula su respectivo $dx$.",
+          "Sustituye la raíz directamente por su equivalente simple $a\\cos(\\theta)$.",
+          "Integra en términos de $\\theta$ y regresa a la variable $x$ usando el triángulo."
+        ],
+        gen: (caseKey) => genSustI(caseKey)
+      },
+      {
+        tag: "Caso II · tan",
+        title: "Ra\u00edz de Suma (N\u00famero + X\u00b2)",
+        hack: "Ves una raíz cuadrada o un denominador con la estructura de **Suma** (ej. $\\sqrt{a^2 + x^2}$).",
+        danger: "Escribir mal la derivada. Recuerda que la derivada de la tangente es la **secante cuadrada**: $dx = a\\sec^2(\\theta)d\\theta$.",
+        tip: "La suma de cuadrados nos remite de inmediato a la identidad de la **Tangente** ($1 + \\tan^2 = \\sec^2$).",
+        formula: "$$x = a\\tan(\\theta), \\, dx = a\\sec^2(\\theta)d\\theta, \\, \\sqrt{a^2+x^2} = a\\sec(\\theta)$$",
+        steps: [
+          "Determina el valor de $a$ (raíz del número).",
+          "Sustituye $x = a\\tan(\\theta)$ y su diferencial $dx$.",
+          "La raíz se simplifica directamente a $a\\sec(\\theta)$.",
+          "Resuelve la integral trigonométrica resultante y regresa a $x$ dibujando el triángulo."
+        ],
+        gen: (caseKey) => genSustII(caseKey)
+      },
+      {
+        tag: "Caso III · sec",
+        title: "Ra\u00edz de X\u00b2 menos N\u00famero",
+        hack: "Ves una raíz cuadrada con la estructura **Variable menos Constante** (ej. $\\sqrt{x^2 - a^2}$). El término variable va primero.",
+        danger: "Confundir este caso con el Caso I (Seno). Fíjate muy bien cuál término va antes del signo menos.",
+        tip: "Como la variable va primero, el cambio correcto utiliza la **Secante** (pues $\\sec^2 - 1 = \\tan^2$).",
+        formula: "$$x = a\\sec(\\theta), \\, dx = a\\sec(\\theta)\\tan(\\theta)d\\theta, \\, \\sqrt{x^2-a^2} = a\\tan(\\theta)$$",
+        steps: [
+          "Identifica el valor de $a$ de la constante que se resta.",
+          "Haz la sustitución de $x$ y el diferencial $dx$.",
+          "Reemplaza la raíz directamente por $a\\tan(\\theta)$.",
+          "Integra y regresa a $x$ usando las lecturas del triángulo trigonométrico."
+        ],
+        gen: (caseKey) => genSustIII(caseKey)
+      }
+    ]
+  },
+  {
+    id: "parc",
+    emoji: "🔢",
+    title: "Fracciones Parciales",
+    sub: "Divisi\u00f3n de polinomios",
+    color: "#e85a5a",
+    cases: [
+      {
+        tag: "Caso 1",
+        title: "Factores lineales distintos",
+        hack: "Ves una división de polinomios $\\frac{P(x)}{Q(x)}$ donde el denominador se puede factorizar en **paréntesis lineales sencillos y diferentes** (ej. $(x-1)(x+2)$).",
+        danger: "No verificar el grado del numerador. **¡Cuidado!** Si el grado de arriba es mayor o igual al de abajo, tienes que hacer **división de polinomios** primero.",
+        tip: "Divide tu fracción gigante en la suma de fracciones simples asignando una constante ($A$, $B$) a cada paréntesis. Integrarán como logaritmos naturales ($\\ln$).",
+        formula: "$$\\frac{P(x)}{(x-a)(x-b)} = \\frac{A}{x-a} + \\frac{B}{x-b} \\quad \\rightarrow \\quad \\int = A\\ln|x-a| + B\\ln|x-b|$$",
+        steps: [
+          "Verifica grados. Si es necesario, divide primero.",
+          "Factoriza por completo el denominador.",
+          "Escribe la separación con constantes $A, B...$ sobre cada factor.",
+          "Multiplica para quitar denominadores y calcula las constantes sustituyendo los valores críticos de $x$."
+        ],
+        gen: (caseKey) => genParc1(caseKey)
+      },
+      {
+        tag: "Caso 2",
+        title: "Factores lineales repetidos",
+        hack: "Ves un término lineal en el denominador con un **exponente afuera del paréntesis** (ej. $(x-1)^2$). El factor se repite.",
+        danger: "Integrar la fracción repetida como logaritmo. **¡Grave error!** $\\int \\frac{1}{(x-1)^2} dx$ se resuelve como potencia negativa: $-\\frac{1}{x-1}$, no como $\\ln$.",
+        tip: "Arma una **escalera de fracciones** para el término repetido, incrementando la potencia paso a paso desde 1 hasta el exponente indicado.",
+        formula: "$$\\frac{P(x)}{(x-a)^2} = \\frac{A}{x-a} + \\frac{B}{(x-a)^2}$$",
+        steps: [
+          "Plantea la dscposición respetando la escalera de potencias.",
+          "Multiplica todo para eliminar fracciones.",
+          "Encuentra las constantes sustituyendo los valores de $x$ o igualando coeficientes.",
+          "Integra cada término (el lineal es $\\ln$, los repetidos usan regla de potencias)."
+        ],
+        gen: (caseKey) => genParc2(caseKey)
+      },
+      {
+        tag: "Caso 3",
+        title: "Factor cuadr\u00e1tico irreducible",
+        hack: "Ves en el denominador un término cuadrático con $x^2$ que **no se puede factorizar más en números reales** (ej. $x^2 + 4$ o $x^2 + 2x + 5$).",
+        danger: "Olvidar que arriba de un factor cuadrático irreducible debes colocar un numerador lineal completo ($Bx + C$), no solo una letra.",
+        tip: "Al integrar el término lineal compuesto $\\frac{Bx+C}{x^2+a^2}$, sepáralo en dos partes: la parte con $x$ será una sustitución simple ($\\ln$), y la parte constante será un $\\arctan$.",
+        formula: "$$\\frac{P(x)}{x(x^2+a^2)} = \\frac{A}{x} + \\frac{Bx+C}{x^2+a^2}$$",
+        steps: [
+          "Establece la descomposición colocando $Bx+C$ sobre el término irreducible.",
+          "Encuentra las constantes resolviendo el sistema lineal resultante.",
+          "Separa la integral del cuadrático en dos fracciones independientes.",
+          "Resuelve la primera con cambio de variable clásico y la segunda como ArcoTangente."
+        ],
+        gen: (caseKey) => genParc3(caseKey)
+      }
+    ]
+  }
+];
+
+/* ===================== HISTORIAL EXCLUSIVO ANTI-REPETICIÓN LOCAL ===================== */
+function pickUniqueLocal(vars, caseKey) {
+  const historyStorageKey = `supervivencia_local_history_${caseKey}`;
+  let history = [];
+  try {
+    history = JSON.parse(localStorage.getItem(historyStorageKey) || '[]');
+  } catch (e) {
+    history = [];
+  }
+
+  // Si ya se mostraron todos los ejercicios disponibles del banco local, se limpia el historial
+  if (history.length >= vars.length) {
+    history = [];
+  }
+
+  // Identificar índices disponibles que todavía no han sido visualizados
+  let available = [];
+  for (let i = 0; i < vars.length; i++) {
+    if (!history.includes(i)) {
+      available.push(i);
+    }
+  }
+
+  // Elegir aleatoriamente uno de los índices limpios
+  const chosenIdx = available[Math.floor(Math.random() * available.length)];
+  history.push(chosenIdx);
+  
+  // Guardar de vuelta en localStorage para persistencia
+  localStorage.setItem(historyStorageKey, JSON.stringify(history));
+  return vars[chosenIdx];
+}
+
+/* ===================== AUXILIARES DE GENERACIÓN LOCAL AMPLIADOS ===================== */
+function genPartes1(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int x e^{2x} dx$$",
+      pasos: [
+        { formula: "\\text{Regla ILATE (Prioridad: Algebraica } > \\text{ Exponencial)}", accion: "Analizamos los tipos de funciones presentes. Como la función algebraica ($x$) tiene prioridad sobre la exponencial ($e^{2x}$), asignamos $u = x$ y determinamos el diferencial remanente como $dv = e^{2x} dx$.", resultado: "u = x, \\, du = dx, \\, v = \\frac{1}{2} e^{2x}" },
+        { formula: "\\int u dv = u \\cdot v - \\int v du", accion: "Sustituimos las expresiones obtenidas en la mnemotecnia de integración por partes (Una Vaca Sin cola Vestida De Uniforme), acomodando las constantes numéricas como fracciones por delante de las variables.", resultado: "\\frac{1}{2} x e^{2x} - \\int \\frac{1}{2} e^{2x} dx" },
+        { formula: "\\int e^{ax} dx = \\frac{1}{a} e^{ax}", accion: "Extraemos la constante $\\frac{1}{2}$ fuera del operador de integración y resolvemos la integral inmediata exponencial remanente aplicando la regla lineal estándar de integración.", resultado: "\\frac{1}{2} x e^{2x} - \\frac{1}{4} e^{2x}" }
+      ],
+      respuesta: "$$\\frac{1}{2} x e^{2x} - \\frac{1}{4} e^{2x} + C$$"
+    },
+    {
+      problema: "$$\\int x^2 e^{x} dx$$",
+      pasos: [
+        { formula: "\\text{Regla ILATE (Jerarquía: } x^2 \\text{ es Algebraica, } e^x \\text{ es Exponencial)}", accion: "Establecemos $u$ como la algebraica $x^2$ para reducir de manera sucesiva su exponente mediante diferenciación. El diferencial remanente es $dv = e^x dx$, el cual integramos inmediatamente.", resultado: "u = x^2, \\, du = 2x dx, \\, v = e^x" },
+        { formula: "\\int u dv = u \\cdot v - \\int v du", accion: "Aplicamos la ecuación de integración por partes por primera vez, reduciendo el grado del polinomio de un término cuadrático a uno lineal de primer grado.", resultado: "x^2 e^x - \\int 2x e^x dx" },
+        { formula: "\\text{Segunda aplicación de partes sobre: } \\int 2x e^x dx", accion: "Como la integral resultante es aún un producto, aplicamos de nuevo el método de partes con $u_2 = 2x$ (algebraica) y $dv_2 = e^x dx$ (exponencial) para eliminar la variable $x$ por completo.", resultado: "u_2 = 2x, \\, du_2 = 2 dx, \\, v_2 = e^x \\implies 2x e^x - 2 e^x" }
+      ],
+      respuesta: "$$x^2 e^x - 2x e^x + 2e^x + C$$"
+    },
+    {
+      problema: "$$\\int x \\ln(x) dx$$",
+      pasos: [
+        { formula: "\\text{Regla ILATE (Prioridad: Logarítmica } > \\text{ Algebraica)}", accion: "Dado que las funciones logarítmicas se posicionan antes que las algebraicas en ILATE, hacemos de manera obligatoria $u = \\ln(x)$. Derivamos usando la regla del logaritmo e integramos $dv = x dx$ con la regla de potencias.", resultado: "u = \\ln(x), \\, du = \\frac{1}{x} dx, \\, v = \\frac{1}{2} x^2" },
+        { formula: "\\int u dv = u \\cdot v - \\int v du", accion: "Sustituimos las expresiones en la fórmula de partes y simplificamos el integrando multiplicando los términos algebraicos resultantes antes de proceder.", resultado: "\\frac{1}{2} x^2 \\ln(x) - \\int \\frac{1}{2} x^2 \\left(\\frac{1}{x}\\right) dx = \\frac{1}{2} x^2 \\ln(x) - \\int \\frac{1}{2} x dx" },
+        { formula: "\\int x^n dx = \\frac{x^{n+1}}{n+1}", accion: "Integramos el término polinomial lineal restante aplicando de forma directa la regla de potencias clásica y multiplicando por el coeficiente exterior.", resultado: "\\frac{1}{2} x^2 \\ln(x) - \\frac{1}{4} x^2" }
+      ],
+      respuesta: "$$\\frac{1}{2} x^2 \\ln(x) - \\frac{1}{4} x^2 + C$$"
+    },
+    {
+      problema: "$$\\int \\arctan(x) dx$$",
+      pasos: [
+        { formula: "\\text{Regla ILATE (Prioridad: Inversa Trigonométrica } > \\text{ Unidad Algebraica)}", accion: "Como las funciones trigonométricas inversas no cuentan con antiderivada inmediata, fijamos $u = \\arctan(x)$ y $dv = dx$. Obtenemos el diferencial $du$ derivando respecto a $x$ e integramos $dv$ para obtener $v$.", resultado: "u = \\arctan(x), \\, du = \\frac{1}{1+x^2}dx, \\, v = x" },
+        { formula: "\\int u dv = u \\cdot v - \\int v du", accion: "Planteamos la estructura de integración por partes y unificamos la nueva fracción algebraica en el integrando.", resultado: "x \\arctan(x) - \\int \\frac{x}{1+x^2} dx" },
+        { formula: "\\text{Sustitución simple u-sub: } w = 1+x^2 \\implies dw = 2x dx", accion: "Para resolver la integral restante, aplicamos un cambio de variable donde el numerador $x dx$ representa exactamente la mitad del diferencial del denominador, es decir, $\\frac{1}{2} dw$.", resultado: "x \\arctan(x) - \\frac{1}{2} \\ln(1+x^2)" }
+      ],
+      respuesta: "$$x \\arctan(x) - \\frac{1}{2} \\ln(1+x^2) + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genPartes2(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int e^{x} \\cos(x) dx$$",
+      pasos: [
+        { formula: "\\text{Nombramiento algebraico del ciclo: } I = \\int e^x \\cos(x) dx", accion: "Definimos la integral original bajo la variable de incógnita $I$ para poder resolver el ciclo mediante un despeje algebraico final.", resultado: "I = \\int e^x \\cos(x) dx" },
+        { formula: "\\text{Primera vuelta: } u_1 = \\cos(x), \\, dv_1 = e^x dx", accion: "Elegimos $u$ como la función trigonométrica y derivamos, mientras integramos de forma directa la función exponencial para encontrar $v$.", resultado: "I = e^x \\cos(x) + \\int e^x \\sin(x) dx" },
+        { formula: "\\text{Segunda vuelta (mismo criterio): } u_2 = \\sin(x), \\, dv_2 = e^x dx", accion: "Aplicamos de nuevo el método de partes de forma consecutiva sobre la nueva integral, manteniendo estrictamente el orden de prioridad trigonométrico para no anular el paso anterior.", resultado: "I = e^x \\cos(x) + e^x \\sin(x) - \\int e^x \\cos(x) dx" },
+        { formula: "\\text{Despeje de ecuación: } I = \\text{expresiones} - I \\implies 2I = \\text{expresiones}", accion: "Identificamos que la integral original $I$ ha reaparecido con signo negativo. La trasladamos sumando al lado izquierdo del sistema y despejamos dividiendo el conjunto entre 2.", resultado: "2I = e^x \\cos(x) + e^x \\sin(x) \\implies I = \\frac{1}{2} e^x (\\cos(x) + \\sin(x))" }
+      ],
+      respuesta: "$$\\frac{1}{2} e^x (\\cos(x) + \\sin(x)) + C$$"
+    },
+    {
+      problema: "$$\\int e^{2x} \\sin(x) dx$$",
+      pasos: [
+        { formula: "\\text{Nombramiento del ciclo: } I = \\int e^{2x} \\sin(x) dx", accion: "Establecemos el ciclo bajo la constante literal $I$ para aislarla al concluir las iteraciones correspondientes.", resultado: "I = \\int e^{2x} \\sin(x) dx" },
+        { formula: "\\text{Iteración 1: } u_1 = \\sin(x), \\, dv_1 = e^{2x} dx", accion: "Efectuamos la primera ronda de partes. Integramos la exponencial dividiendo entre el coeficiente de su exponente lineal.", resultado: "I = \\frac{1}{2} e^{2x} \\sin(x) - \\int \\frac{1}{2} e^{2x} \\cos(x) dx" },
+        { formula: "\\text{Iteración 2: } u_2 = \\cos(x), \\, dv_2 = \\frac{1}{2} e^{2x} dx", accion: "Aplicamos partes de manera consecutiva a la integral interna. El diferencial $du_2$ genera un cambio de signo negativo a positivo por derivación del coseno.", resultado: "I = \\frac{1}{2} e^{2x} \\sin(x) - \\frac{1}{4} e^{2x} \\cos(x) - \\frac{1}{4} I" },
+        { formula: "\\text{Suma fraccionaria: } \\left(1 + \\frac{1}{4}\\right)I = \\frac{5}{4} I", accion: "Pasamos el término fraccionario de la integral al lado izquierdo y despejamos multiplicando toda la expresión del lado derecho por su recíproco $\\frac{4}{5}$.", resultado: "\\frac{5}{4} I = \\frac{1}{2} e^{2x} \\sin(x) - \\frac{1}{4} e^{2x} \\cos(x)" }
+      ],
+      respuesta: "$$\\frac{4}{5} \\left( \\frac{1}{2} e^{2x} \\sin(x) - \\frac{1}{4} e^{2x} \\cos(x) \\right) + C = \\frac{2}{5} e^{2x} \\sin(x) - \\frac{1}{5} e^{2x} \\cos(x) + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genTrigI(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\sin^2(x) \\cos^3(x) dx$$",
+      pasos: [
+        { formula: "\\cos^3(x) = \\cos^2(x) \\cdot \\cos(x)", accion: "Identificamos que la potencia de coseno es impar. Separamos de manera inmediata un factor coseno lineal para consolidarlo junto al diferencial $dx$ como nuestro futuro $du$.", resultado: "\\int \\sin^2(x) \\cos^2(x) \\cdot [\\cos(x) dx]" },
+        { formula: "\\cos^2(x) = 1 - \\sin^2(x)", accion: "Convertimos los términos de cosenos con exponentes pares restantes a términos de senos utilizando la identidad pitagórica fundamental.", resultado: "\\int \\sin^2(x) (1 - \\sin^2(x)) \\cdot [\\cos(x) dx]" },
+        { formula: "u = \\sin(x) \\implies du = \\cos(x)dx", accion: "Realizamos la sustitución polinomial simple. El coseno lineal apartado al inicio absorbe el diferencial, transformando la expresión en una integral polinómica pura.", resultado: "\\int u^2 (1 - u^2) du = \\int (u^2 - u^4) du" },
+        { formula: "\\int u^n du = \\frac{u^{n+1}}{n+1}", accion: "Integramos término a término aplicando la regla de potencias básicas e invertimos la sustitución devolviendo las variables a términos trigonométricos de $x$.", resultado: "\\frac{1}{3} \\sin^3(x) - \\frac{1}{5} \\sin^5(x)" }
+      ],
+      respuesta: "$$\\frac{1}{3} \\sin^3(x) - \\frac{1}{5} \\sin^5(x) + C$$"
+    },
+    {
+      problema: "$$\\int \\cos^5(x) dx$$",
+      pasos: [
+        { formula: "\\cos^5(x) = \\cos^4(x) \\cdot \\cos(x)", accion: "Aislamos un coseno para formar el diferencial del cambio de variable.", resultado: "\\int \\cos^4(x) \\cdot [\\cos(x) dx]" },
+        { formula: "\\cos^4(x) = (1 - \\sin^2(x))^2", accion: "Elevamos al cuadrado la identidad fundamental para convertir la cuarta potencia del coseno en una expresión polinómica cuadrática del seno.", resultado: "\\int (1 - 2\\sin^2(x) + \\sin^4(x)) \\cdot [\\cos(x) dx]" },
+        { formula: "u = \\sin(x) \\implies du = \\cos(x)dx", accion: "Sustituimos e integramos la serie de potencias simples resultantes del binomio expandido.", resultado: "\\int (1 - 2u^2 + u^4) du = u - \\frac{2}{3}u^3 + \\frac{1}{5}u^5" }
+      ],
+      respuesta: "$$\\sin(x) - \\frac{2}{3}\\sin^3(x) + \\frac{1}{5}\\sin^5(x) + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genTrigII(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\sin^3(x) \\cos^2(x) dx$$",
+      pasos: [
+        { formula: "\\sin^3(x) = \\sin^2(x) \\cdot \\sin(x)", accion: "Dado que el seno cuenta con potencia impar, separamos un factor de seno lineal y lo colocamos junto a $dx$ para conformar el diferencial.", resultado: "\\int \\sin^2(x) \\cos^2(x) \\cdot [\\sin(x) dx]" },
+        { formula: "\\sin^2(x) = 1 - \\cos^2(x)", accion: "Utilizamos la identidad pitagórica fundamental para convertir el seno par restante en expresiones de coseno.", resultado: "\\int (1 - \\cos^2(x)) \\cos^2(x) \\cdot [\\sin(x) dx]" },
+        { formula: "u = \\cos(x) \\implies du = -\\sin(x)dx", accion: "Sustituimos las variables trigonométricas por la variable polinomial $u$. Multiplicamos por el signo negativo generado al diferenciar el coseno.", resultado: "-\\int (1 - u^2) u^2 du = \\int (u^4 - u^2) du = \\frac{1}{5}u^5 - \\frac{1}{3}u^3" }
+      ],
+      respuesta: "$$\\frac{1}{5} \\cos^5(x) - \\frac{1}{3} \\cos^3(x) + C$$"
+    },
+    {
+      problema: "$$\\int \\sin^5(x) \\cos^2(x) dx$$",
+      pasos: [
+        { formula: "\\sin^5(x) = \\sin^4(x) \\cdot \\sin(x)", accion: "Apartamos un factor de seno al final del integrando para que funja como elemento $du$.", resultado: "\\int \\sin^4(x) \\cos^2(x) \\cdot [\\sin(x) dx]" },
+        { formula: "\\sin^4(x) = (1 - \\cos^2(x))^2", accion: "Traducimos la potencia par de seno a términos de coseno expandiendo la potencia binómica.", resultado: "\\int (1 - 2\\cos^2(x) + \\cos^4(x)) \\cos^2(x) \\cdot [\\sin(x) dx]" },
+        { formula: "u = \\cos(x) \\implies du = -\\sin(x)dx", accion: "Realizamos la sustitución aplicando el signo negativo del diferencial e integramos término a término la expresión expandida.", resultado: "-\\int (u^2 - 2u^4 + u^6) du = -\\frac{1}{3}u^3 + \\frac{2}{5}u^5 - \\frac{1}{7}u^7" }
+      ],
+      respuesta: "$$-\\frac{1}{3}\\cos^3(x) + \\frac{2}{5}\\cos^5(x) - \\frac{1}{7}\\cos^7(x) + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genTrigIII(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\sin^2(x) dx$$",
+      pasos: [
+        { formula: "\\sin^2(x) = \\frac{1 - \\cos(2x)}{2}", accion: "Como el exponente es par y no hay otros factores, recurrimos de manera obligatoria a la identidad trigonométrica reductora de ángulo doble.", resultado: "\\int \\left(\\frac{1}{2} - \\frac{1}{2}\\cos(2x)\\right) dx" },
+        { formula: "\\int \\cos(ax) dx = \\frac{1}{a} \\sin(ax)", accion: "Separamos el integrando en integrales individuales inmediatas y procedemos a resolver cada una de ellas multiplicando por las constantes recíprocas.", resultado: "\\frac{1}{2}x - \\frac{1}{4}\\sin(2x)" }
+      ],
+      respuesta: "$$\\frac{1}{2}x - \\frac{1}{4}\\sin(2x) + C$$"
+    },
+    {
+      problema: "$$\\int \\cos^2(x) dx$$",
+      pasos: [
+        { formula: "\\cos^2(x) = \\frac{1 + \\cos(2x)}{2}", accion: "Cambiamos la potencia cuadrática del coseno aplicando la identidad del ángulo doble con coeficiente positivo.", resultado: "\\int \\left(\\frac{1}{2} + \\frac{1}{2}\\cos(2x)\\right) dx" },
+        { formula: "\\text{Integración lineal directa}", accion: "Integramos el valor constante y la función trigonométrica de argumento doble por separado.", resultado: "\\frac{1}{2}x + \\frac{1}{4}\\sin(2x)" }
+      ],
+      respuesta: "$$\\frac{1}{2}x + \\frac{1}{4}\\sin(2x) + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genTrigIV(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\tan^2(x) \\sec^4(x) dx$$",
+      pasos: [
+        { formula: "\\sec^4(x) = \\sec^2(x) \\cdot \\sec^2(x)", accion: "Identificamos que la potencia de secante es par. Aislamos un factor $\\sec^2(x)$ para usarlo como el diferencial $du$ de nuestra sustitución.", resultado: "\\int \\tan^2(x) \\sec^2(x) \\cdot [\\sec^2(x) dx]" },
+        { formula: "\\sec^2(x) = 1 + \\tan^2(x)", accion: "Convertimos las secantes pares restantes a términos de tangente utilizando la identidad pitagórica correspondiente.", resultado: "\\int \\tan^2(x) (1 + \\tan^2(x)) \\cdot [\\sec^2(x) dx]" },
+        { formula: "u = \\tan(x) \\implies du = \\sec^2(x)dx", accion: "Sustituimos las tangentes por la variable algebraica $u$. El factor secante cuadrado aislado es absorbido de forma completa por el diferencial.", resultado: "\\int u^2(1+u^2)du = \\int (u^2 + u^4) du" }
+      ],
+      respuesta: "$$\\frac{1}{3} \\tan^3(x) + \\frac{1}{5} \\tan^5(x) + C$$"
+    },
+    {
+      problema: "$$\\int \\sec^4(x) dx$$",
+      pasos: [
+        { formula: "\\sec^4(x) = \\sec^2(x) \\cdot \\sec^2(x)", accion: "Aislamos una secante cuadrada para fungir como el término $du$.", resultado: "\\int \\sec^2(x) \\cdot [\\sec^2(x) dx]" },
+        { formula: "\\sec^2(x) = 1 + \\tan^2(x)", accion: "Efectuamos el cambio de identidad pitagórica en la secante restante.", resultado: "\\int (1 + \\tan^2(x)) \\cdot [\\sec^2(x) dx]" },
+        { formula: "u = \\tan(x) \\implies du = \\sec^2(x)dx", accion: "Traducimos la integral a una forma polinómica simple de fácil resolución inmediata.", resultado: "\\int (1 + u^2) du = u + \\frac{1}{3}u^3" }
+      ],
+      respuesta: "$$\\tan(x) + \\frac{1}{3}\\tan^3(x) + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genTrigV(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\tan^3(x) \\sec^3(x) dx$$",
+      pasos: [
+        { formula: "\\tan^3(x) \\sec^3(x) = \\tan^2(x) \\sec^2(x) \\cdot [\\sec(x)\\tan(x)]", accion: "Observamos que la tangente es de exponente impar. Separamos un factor de tangente y uno de secante al final para construir el diferencial del método.", resultado: "\\int \\tan^2(x) \\sec^2(x) \\cdot [\\sec(x)\\tan(x) dx]" },
+        { formula: "\\tan^2(x) = \\sec^2(x) - 1", accion: "Convertimos los exponentes pares de tangentes a secantes.", resultado: "\\int (\\sec^2(x) - 1) \\sec^2(x) \\cdot [\\sec(x)\\tan(x) dx]" },
+        { formula: "u = \\sec(x) \\implies du = \\sec(x)\\tan(x)dx", accion: "Llevamos a cabo el cambio de variable. El combo lineal de secante-tangente es asimilado por el diferencial.", resultado: "\\int (u^2 - 1)u^2 du = \\int (u^4 - u^2) du" }
+      ],
+      respuesta: "$$\\frac{1}{5} \\sec^5(x) - \\frac{1}{3} \\sec^3(x) + C$$"
+    },
+    {
+      problema: "$$\\int \\tan(x) \\sec^3(x) dx$$",
+      pasos: [
+        { formula: "\\tan(x) \\sec^3(x) = \\sec^2(x) \\cdot [\\sec(x)\\tan(x)]", accion: "Aislamos un factor combinado de secante y tangente al final de la expresión.", resultado: "\\int \\sec^2(x) \\cdot [\\sec(x)\\tan(x) dx]" },
+        { formula: "u = \\sec(x) \\implies du = \\sec(x)\\tan(x)dx", accion: "Efectuamos el cambio de variable algebraico, reduciendo la expresión a una regla de potencias directa.", resultado: "\\int u^2 du = \\frac{1}{3}u^3" }
+      ],
+      respuesta: "$$\\frac{1}{3}\\sec^3(x) + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genTrigVI(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\sin(3x) \\cos(x) dx$$",
+      pasos: [
+        { formula: "\\sin(A)\\cos(B) = \\frac{1}{2}(\\sin(A-B) + \\sin(A+B))", accion: "Como los argumentos son diferentes, aplicamos la identidad trigonométrica de producto a suma para separar los ángulos.", resultado: "\\int \\frac{1}{2}(\\sin(2x) + \\sin(4x)) dx" },
+        { formula: "\\int \\sin(ax) dx = -\\frac{1}{a} \\cos(ax)", accion: "Resolvemos de manera separada cada término integrando de forma inmediata y dividiendo entre la constante del ángulo.", resultado: "-\\frac{1;}{4}\\cos(2x) - \\frac{1}{8}\\cos(4x)" }
+      ],
+      respuesta: "$$-\\frac{1}{4}\\cos(2x) - \\frac{1}{8}\\cos(4x) + C$$"
+    },
+    {
+      problema: "$$\\int \\cos(5x) \\cos(2x) dx$$",
+      pasos: [
+        { formula: "\\cos(A)\\cos(B) = \\frac{1}{2}(\\cos(A-B) + \\cos(A+B))", accion: "Utilizamos la fórmula de producto a suma para cosenos para simplificar el integrando con argumentos distintos.", resultado: "\\int \\frac{1}{2}(\\cos(3x) + \\cos(7x)) dx" },
+        { formula: "\\int \\cos(ax) dx = \\frac{1}{a} \\sin(ax)", accion: "Efectuamos la integración término a término dividiendo por los coeficientes lineales internos.", resultado: "\\frac{1}{6}\\sin(3x) + \\frac{1}{14}\\sin(7x)" }
+      ],
+      respuesta: "$$\\frac{1}{6}\\sin(3x) + \\frac{1}{14}\\sin(7x) + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genSustI(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\frac{1}{\\sqrt{4 - x^2}} dx$$",
+      pasos: [
+        { formula: "x = a\\sin(\\theta) \\implies dx = a\\cos(\\theta)d\\theta", accion: "Dado que el radicando cuenta con la estructura constante menos variable ($a^2 - x^2$), proponemos la sustitución con seno, donde $a = 2$.", resultado: "x = 2\\sin(\\theta), \\, dx = 2\\cos(\\theta)d\\theta" },
+        { formula: "\\sqrt{a^2 - a^2\\sin^2(\\theta)} = a\\cos(\\theta)", accion: "Efectuamos la simplificación algebraica del radicando aplicando identidades trigonométricas pitagóricas.", resultado: "\\sqrt{4 - 4\\sin^2(\\theta)} = 2\\cos(\\theta)" },
+        { formula: "\\int d\\theta = \\theta", accion: "Introducimos las expresiones transformadas en la integral original, cancelando los factores equivalentes en el numerador y el denominador.", resultado: "\\int \\frac{2\\cos(\\theta)}{2\\cos(\\theta)} d\\theta = \\int d\\theta = \\theta" },
+        { formula: "\\theta = \\arcsin\\left(\\frac{x}{a}\\right)", accion: "Regresamos a la variable original $x$ despejando el ángulo obtenido a partir de la propuesta inicial.", resultado: "\\theta = \\arcsin\\left(\\frac{x}{2}\\right)" }
+      ],
+      respuesta: "$$\\arcsin\\left(\\frac{x}{2}\\right) + C$$"
+    },
+    {
+      problema: "$$\\int \\sqrt{9 - x^2} dx$$",
+      pasos: [
+        { formula: "x = 3\\sin(\\theta) \\implies dx = 3\\cos(\\theta)d\\theta", accion: "Asignamos la sustitución trigonométrica correspondiente para el Caso I.", resultado: "x = 3\\sin(\\theta)" },
+        { formula: "\\sqrt{9 - x^2} = 3\\cos(\\theta)", accion: "Reducimos la expresión radical transformándola en un término simple de coseno.", resultado: "\\sqrt{9 - x^2} = 3\\cos(\\theta)" },
+        { formula: "\\int \\cos^2(\\theta) d\\theta = \\frac{1}{2}\\theta + \\frac{1}{2}\\sin(\\theta)\\cos(\\theta)", accion: "Sustituimos el diferencial e integramos la potencia par de coseno aplicando la reducción de ángulo doble correspondiente.", resultado: "\\frac{9}{2}\\theta + \\frac{9}{4}\\sin(2x) = \\frac{9}{2}\\theta + \\frac{9}{2}\\sin(\\theta)\\cos(\\theta)" }
+      ],
+      respuesta: "$$\\frac{9}{2}\\arcsin\\left(\\frac{x}{3}\right) + \\frac{1}{2} x \\sqrt{9-x^2} + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genSustII(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\frac{1}{x^2 + 9} dx$$",
+      pasos: [
+        { formula: "x = a\\tan(\\theta) \\implies dx = a\\sec^2(\\theta)d\\theta", accion: "Como se presenta una suma de cuadrados en el denominador, asignamos el cambio con tangente con $a = 3$.", resultado: "x = 3\\tan(\\theta)" },
+        { formula: "a^2\\tan^2(\\theta) + a^2 = a^2\\sec^2(\\theta)", accion: "Sustituimos la variable en el binomio inferior para reducirlo empleando identidades trigonométricas fundamentales.", resultado: "x^2 + 9 = 9\\sec^2(\\theta)" },
+        { formula: "\\int d\\theta = \\theta", accion: "Reemplazamos todas las piezas de la integral original, simplificamos los términos de secantes cuadradas y resolvemos la integral constante.", resultado: "\\int \\frac{3\\sec^2(\\theta)}{9\\sec^2(\\theta)} d\\theta = \\frac{1}{3} \\int d\\theta = \\frac{1}{3}\\theta" }
+      ],
+      respuesta: "$$\\frac{1}{3}\\arctan\\left(\\frac{x}{3}\right) + C$$"
+    },
+    {
+      problema: "$$\\int \\frac{1}{\\sqrt{x^2 + 4}} dx$$",
+      pasos: [
+        { formula: "x = 2\\tan(\\theta) \\implies dx = 2\\sec^2(\\theta)d\\theta", accion: "Planteamos la sustitución por presencia de suma bajo la raíz.", resultado: "x = 2\\tan(\\theta)" },
+        { formula: "\\sqrt{x^2 + 4} = 2\\sec(\\theta)", accion: "Simplificamos la expresión radical a su equivalente lineal secante.", resultado: "\\sqrt{x^2 + 4} = 2\\sec(\\theta)" },
+        { formula: "\\int \\sec(\\theta) d\\theta = \\ln|\\sec(\\theta) + \\tan(\\theta)|", accion: "Efectuamos el reemplazo de variables cancelando factores comunes y resolvemos la integral de la secante simple.", resultado: "\\int \\frac{2\\sec^2(\\theta)}{2\\sec(\\theta)} d\\theta = \\int \\sec(\\theta)d\\theta = \\ln|\\sec(\\theta) + \\tan(\\theta)|" }
+      ],
+      respuesta: "$$\\ln\\left| \\frac{\\sqrt{x^2+4}}{2} + \\frac{x}{2} \\right| + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genSustIII(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\frac{1}{x \\sqrt{x^2 - 1}} dx$$",
+      pasos: [
+        { formula: "x = a\\sec(\\theta) \\implies dx = a\\sec(\\theta)\\tan(\\theta)d\\theta", accion: "Dado que la variable cuadrática precede a la constante en la resta dentro de la raíz, aplicamos la sustitución de secante con $a = 1$.", resultado: "x = \\sec(\\theta)" },
+        { formula: "\\sqrt{x^2 - 1} = \\tan(\\theta)", accion: "Reducimos la raíz aplicando de manera directa la identidad fundamental.", resultado: "\\sqrt{x^2 - 1} = \\tan(\\theta)" },
+        { formula: "\\int d\\theta = \\theta", accion: "Sustituimos todos los elementos del integrando original y simplificamos todos los factores idénticos.", resultado: "\\int \\frac{\\sec(\\theta)\\tan(\\theta)}{\\sec(\\theta)\\tan(\\theta)} d\\theta = \\int d\\theta = \\theta" }
+      ],
+      respuesta: "$$\\text{arcsec}(x) + C$$"
+    },
+    {
+      problema: "$$\\int \\frac{\\sqrt{x^2 - 4}}{x} dx$$",
+      pasos: [
+        { formula: "x = 2\\sec(\\theta) \\implies dx = 2\\sec(\\theta)\\tan(\\theta)d\\theta", accion: "Definimos la sustitución correspondiente al Caso III con $a = 2$.", resultado: "x = 2\\sec(\\theta)" },
+        { formula: "\\sqrt{x^2 - 4} = 2\\tan(\\theta)", accion: "Reducimos la raíz cuadrada y colocamos todos los elementos correspondientes en el integrando original.", resultado: "\\int \\frac{2\\tan(\\theta) \\cdot 2\\sec(\\theta)\\tan(\\theta)}{2\\sec(\\theta)} d\\theta = 2\\int \\tan^2(\\theta)d\\theta" },
+        { formula: "\\tan^2(\\theta) = \\sec^2(\\theta) - 1", accion: "Modificamos la tangente cuadrada para poder aplicar reglas de integración inmediata estándar.", resultado: "2\\int (\\sec^2(\\theta) - 1) d\\theta = 2\\tan(\\theta) - 2\\theta" }
+      ],
+      respuesta: "$$\\sqrt{x^2-4} - 2\\text{arcsec}\\left(\\frac{x}{2}\\right) + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genParc1(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\frac{5}{x^2 + x - 6} dx$$",
+      pasos: [
+        { formula: "x^2 + x - 6 = (x+3)(x-2)", accion: "Analizamos el denominador de la fracción y lo factorizamos en binomios lineales con coeficientes enteros distintos.", resultado: "(x+3)(x-2)" },
+        { formula: "\\frac{5}{(x+3)(x-2)} = \\frac{A}{x+3} + \\frac{B}{x-2}", accion: "Planteamos la descomposición de fracciones parciales asignando una constante para cada factor lineal determinado.", resultado: "\\frac{A}{x+3} + \\frac{B}{x-2}" },
+        { formula: "5 = A(x-2) + B(x+3)", accion: "Multiplicamos ambos miembros por el denominador común $(x+3)(x-2)$ para eliminar fracciones, obteniendo la ecuación entera $5 = A(x-2) + B(x+3)$. Para despejar las constantes, evaluamos la ecuación lineal resultante en los valores críticos (raíces del denominador): <br/><br/>• Si hacemos $x = 2 \\implies 5 = B(2+3) \\implies 5 = 5B \\implies B = 1$. <br/>• Si hacemos $x = -3 \\implies 5 = A(-3-2) \\implies 5 = -5A \\implies A = -1$.", resultado: "A = -1, \\, B = 1" },
+        { formula: "\\int \\frac{1}{x-a} dx = \\ln|x-a|", accion: "Sustituimos $A = -1$ y $B = 1$ en el planteamiento, separamos la fracción en integrales individuales sencillas y resolvemos aplicando de manera directa logaritmos naturales integrales inmediatos.", resultado: "-\\ln|x+3| + \\ln|x-2|" }
+      ],
+      respuesta: "$$\\ln\\left|\\frac{x-2}{x+3}\\right| + C$$"
+    },
+    {
+      problema: "$$\\int \\frac{1}{x^2 - 4} dx$$",
+      pasos: [
+        { formula: "x^2 - 4 = (x-2)(x+2)", accion: "Factorizamos la diferencia de cuadrados perfecta del denominador para encontrar sus raíces lineales reales.", resultado: "(x-2)(x+2)" },
+        { formula: "\\frac{1}{(x-2)(x+2)} = \\frac{A}{x-2} + \\frac{B}{x+2}", accion: "Planteamos la descomposición correspondiente en una suma de fracciones individuales para factores lineales diferentes.", resultado: "\\frac{A}{x-2} + \\frac{B}{x+2}" },
+        { formula: "1 = A(x+2) + B(x-2)", accion: "Multiplicamos por el denominador común $(x-2)(x+2)$ para despejar el numerador, resultando la ecuación entera lineal: $1 = A(x+2) + B(x-2)$. Procedemos a anular términos evaluando en sus raíces críticas: <br/><br/>• Si hacemos $x = 2 \\implies 1 = A(2+2) + B(0) \\implies 1 = 4A \\implies A = \\frac{1}{4}$. <br/>• Si hacemos $x = -2 \\implies 1 = A(0) + B(-2-2) \\implies 1 = -4B \\implies B = -\\frac{1}{4}$.", resultado: "A = \\frac{1}{4}, \\, B = -\\frac{1}{4}" },
+        { formula: "\\int \\frac{1}{x-a} dx = \\ln|x-a|", accion: "Fijamos las constantes calculadas en la suma de fracciones, separamos en dos integrales independientes y resolvemos como logaritmos.", resultado: "\\frac{1}{4}\\ln|x-2| - \\frac{1}{4}\\ln|x+2|" }
+      ],
+      respuesta: "$$\\frac{1}{4}\\ln|x-2| - \\frac{1}{4}\\ln|x+2| + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genParc2(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\frac{x + 3}{(x + 1)^2} dx$$",
+      pasos: [
+        { formula: "\\frac{x+3}{(x+1)^2} = \\frac{A}{x+1} + \\frac{B}{(x+1)^2}", accion: "Dado que el término lineal en el denominador está elevado al cuadrado (factor lineal repetido), planteamos la escalera de potencias correspondiente en el denominador.", resultado: "\\frac{A}{x+1} + \\frac{B}{(x+1)^2}" },
+        { formula: "x+3 = A(x+1) + B", accion: "Multiplicamos ambos miembros de la ecuación por el denominador común $(x+1)^2$, resultando en la ecuación lineal $x+3 = A(x+1) + B$. Buscamos las constantes: <br/><br/>• Evaluamos en el único valor crítico real $x = -1 \\implies -1+3 = A(0) + B \\implies B = 2$. <br/>• Para hallar $A$, expandimos e igualamos los coeficientes de la variable lineal de primer grado $x$ en ambos lados: el término con $x$ en el miembro izquierdo es $1x$ y en el derecho es $Ax$, por lo tanto, igualando coeficientes se obtiene $A = 1$.", resultado: "A = 1, \\, B = 2" },
+        { formula: "\\int (x-a)^{-n} dx = \\frac{(x-a)^{-n+1}}{-n+1}", accion: "Establecemos las integrales correspondientes de manera separada: el término lineal de potencia uno se integra como logaritmo, mientras que el término con potencia cuadrática repetida se integra usando regla de potencias lineales negativas.", resultado: "\\ln|x+1| - \\frac{2}{x+1}" }
+      ],
+      respuesta: "$$\\ln|x+1| - \\frac{2}{x+1} + C$$"
+    },
+    {
+      problema: "$$\\int \\frac{1}{x(x - 2)^2} dx$$",
+      pasos: [
+        { formula: "\\frac{1}{x(x-2)^2} = \\frac{A}{x} + \\frac{B}{x-2} + \\frac{C}{(x-2)^2}", accion: "Planteamos la descomposición correspondiente para factores lineales mixtos (el factor simple $x$ y el factor cuadrático repetido $(x-2)^2$ mediante escalera de potencias).", resultado: "\\frac{A}{x} + \\frac{B}{x-2} + \\frac{C}{(x-2)^2}" },
+        { formula: "1 = A(x-2)^2 + Bx(x-2) + Cx", accion: "Multiplicamos toda la expresión por el denominador común $x(x-2)^2$, obteniendo la ecuación entera: $1 = A(x-2)^2 + Bx(x-2) + Cx$. Encontramos los numeradores evaluando y comparando coeficientes: <br/><br/>• Si hacemos $x = 0 \\implies 1 = A(0-2)^2 \\implies 1 = 4A \\implies A = \\frac{1}{4}$. <br/>• Si hacemos $x = 2 \\implies 1 = C(2) \\implies C = \\frac{1}{2}$. <br/>• Para hallar $B$, igualamos los coeficientes de la variable de grado cuadrático $x^2$ de ambos miembros de la igualdad. En el miembro izquierdo no hay término cuadrático ($0x^2$) y en el miembro derecho surge de $A(x^2 - 4x + 4) + B(x^2 - 2x) \\implies 0 = A + B \\implies B = -A \\implies B = -\\frac{1}{4}$.", resultado: "A = \\frac{1}{4}, \\, B = -\\frac{1}{4}, \\, C = \\frac{1}{2}" },
+        { formula: "\\int \\frac{1}{(x-a)^2} dx = -\\frac{1}{x-a}", accion: "Separamos la expresión en tres integrales simples definidas en base a las constantes halladas y resolvemos paso a paso usando logaritmos y reglas de integración de potencias.", resultado: "\\frac{1}{4}\\ln|x| - \\frac{1}{4}\\ln|x-2| - \\frac{1}{2(x-2)}" }
+      ],
+      respuesta: "$$\\frac{1}{4}\\ln|x| - \\frac{1}{4}\\ln|x-2| - \\frac{1}{2(x-2)} + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+function genParc3(caseKey) {
+  const vars = [
+    {
+      problema: "$$\\int \\frac{1}{x(x^2 + 1)} dx$$",
+      pasos: [
+        { formula: "\\frac{1}{x(x^2+1)} = \\frac{A}{x} + \\frac{Bx+C}{x^2+1}", accion: "Dado que el denominador presenta el factor cuadrático real irreducible $x^2+1$, establecemos en su numerador una expresión de primer grado completa: $Bx+C$.", resultado: "\\frac{A}{x} + \\frac{Bx+C}{x^2+1}" },
+        { formula: "1 = A(x^2+1) + (Bx+C)x", accion: "Multiplicamos ambos miembros por el denominador común $x(x^2+1)$, resultando en la ecuación lineal entera: $1 = A(x^2+1) + (Bx+C)x$. Resolvemos el sistema de coeficientes: <br/><br/>• Evaluamos en el único valor crítico real $x = 0 \\implies 1 = A(0+1) + (0) \\implies A = 1$. <br/>• Expandimos el resto de la ecuación algebraicamente: $1 = (A+B)x^2 + Cx + A$. <br/>• Igualamos coeficientes de grado cuadrático $x^2 \\implies A+B = 0 \\implies 1+B=0 \\implies B = -1$. <br/>• Igualamos coeficientes lineales de grado uno $x \\implies C = 0$.", resultado: "A = 1, \\, B = -1, \\, C = 0" },
+        { formula: "\\int \\frac{x}{x^2+a^2} dx = \\frac{1}{2}\\ln(x^2+a^2)", accion: "Sustituimos las constantes, descomponiendo la integral en el logaritmo inmediato $\\int \\frac{1}{x} dx$ y la fracción irreducible $\\int \\frac{-x}{x^2+1} dx$. Esta última la resolvemos multiplicando y dividiendo por 2 mediante cambio de variable simple (u-sub).", resultado: "\\ln|x| - \\frac{1}{2}\\ln(x^2+1)" }
+      ],
+      respuesta: "$$\\ln|x| - \\frac{1}{2}\\ln(x^2+1) + C$$"
+    },
+    {
+      problema: "$$\\int \\frac{x}{(x-1)(x^2 + 4)} dx$$",
+      pasos: [
+        { formula: "\\frac{x}{(x-1)(x^2+4)} = \\frac{A}{x-1} + \\frac{Bx+C}{x^2+4}", accion: "Planteamos la descomposición de la fracción ubicando un numerador constante $A$ sobre el factor lineal y un término de grado lineal compuesto $Bx+C$ sobre el factor cuadrático irreducible.", resultado: "\\frac{A}{x-1} + \\frac{Bx+C}{x^2+4}" },
+        { formula: "x = A(x^2+4) + (Bx+C)(x-1)", accion: "Multiplicamos por el denominador común para simplificar denominadores, obteniendo: $x = A(x^2+4) + (Bx+C)(x-1)$. Determinamos las constantes resolviendo por sistema de raíces e igualación de coeficientes: <br/><br/>• Evaluamos en el valor crítico real $x = 1 \\implies 1 = A(1+4) + 0 \\implies 1 = 5A \\implies A = \\frac{1}{5}$. <br/>• Expandimos e igualamos los coeficientes de grado cuadrático $x^2 \\implies A+B = 0 \\implies B = -A \\implies B = -\\frac{1}{5}$. <br/>• Igualamos las constantes numéricas libres (término independiente) en ambos miembros: $0 = 4A - C \\implies C = 4A \\implies C = 4\\left(\\frac{1}{5}\\right) \\implies C = \\frac{4}{5}$.", resultado: "A = \\frac{1}{5}, \\, B = -\\frac{1}{5}, \\, C = \\frac{4}{5}" },
+        { formula: "\\int \\frac{1}{x^2+a^2} dx = \\frac{1}{a}\\arctan\\left(\\frac{x}{a}\\right)", accion: "Sustituimos los numeradores, dividimos la fracción irreducible de término cuadrático en dos partes independientes: una con variable lineal $x$ que resolvemos con cambio de variable (logaritmo natural), y otra con constante numérica que integra como ArcoTangente inmediata.", resultado: "\\frac{1}{5}\\ln|x-1| - \\frac{1}{10}\\ln(x^2+4) + \\frac{2}{5}\\arctan\\left(\\frac{x}{2}\\right)" }
+      ],
+      respuesta: "$$\\frac{1}{5}\\ln|x-1| - \\frac{1}{10}\\ln(x^2+4) + \\frac{2}{5}\\arctan\\left(\\frac{x}{2}\\right) + C$$"
+    }
+  ];
+  return pickUniqueLocal(vars, caseKey);
+}
+
+/* ===================== CONTROL DE EVENTOS Y FLUJO ===================== */
+let done = new Set();
+let curTopic = 0;
+let curCase = 0;
+let currentProblem = null;
+let solVisible = false;
+
+// Variables globales para la detección de gestos táctiles (Swipe)
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+function initApp() {
+  const savedDone = localStorage.getItem('calculo_supervivencia_done');
+  if (savedDone) {
+    done = new Set(JSON.parse(savedDone));
+  }
+  safeCreateIcons();
+  renderHome();
+  setupNavigationEvents();
+}
+
+window.onload = function() {
+  if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+    initApp();
+  } else {
+    let attempts = 0;
+    const interval = setInterval(function() {
+      attempts++;
+      if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+        clearInterval(interval);
+        initApp();
+      } else if (attempts >= 30) {
+        clearInterval(interval);
+        initApp();
+      }
+    }, 100);
+  }
+};
+
+function saveDoneState() {
+  localStorage.setItem('calculo_supervivencia_done', JSON.stringify(Array.from(done)));
+}
+
+function updateProgress() {
+  const TOTAL_CASES = TOPICS.reduce((sum, t) => sum + t.cases.length, 0);
+  const pct = (done.size / TOTAL_CASES) * 100;
+  document.getElementById('main-progress').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${done.size} / ${TOTAL_CASES} casos completados`;
+}
+
+function renderHome() {
+  document.getElementById('home-screen').classList.remove('hidden');
+  document.getElementById('case-screen').classList.add('hidden');
+  
+  const list = document.getElementById('topic-list');
+  list.innerHTML = '';
+  
+  TOPICS.forEach((t, ti) => {
+    const cDone = t.cases.filter((_, ci) => done.has(t.id + '-' + ci)).length;
+    const allDone = cDone === t.cases.length;
+    const pct = (cDone / t.cases.length) * 100;
+    
+    const card = document.createElement('div');
+    card.className = `custom-card p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-900/60 transition ${allDone ? 'border-emerald-500/50 bg-emerald-950/5' : ''}`;
+    card.onclick = () => openTopic(ti);
+    
+    card.innerHTML = `
+      <div class="w-12 h-12 rounded-2xl bg-slate-950 flex items-center justify-center text-2xl border border-slate-800 flex-shrink-0">
+        ${t.emoji}
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="text-sm font-bold text-white truncate">${t.title}</h3>
+        <p class="text-xs text-slate-400 mt-0.5 truncate">${t.sub} · ${cDone}/${t.cases.length} completados</p>
+        <div class="w-full bg-slate-950 h-1.5 rounded-full mt-2 overflow-hidden">
+          <div class="h-full rounded-full" style="width: ${pct}%; background-color: ${t.color}"></div>
+        </div>
+      </div>
+      <div class="text-slate-500 flex-shrink-0">
+        ${allDone ? '<i data-lucide="check-circle" class="text-emerald-400 w-5 h-5"></i>' : '<i data-lucide="chevron-right" class="w-5 h-5"></i>'}
+      </div>
+    `;
+    list.appendChild(card);
+  });
+  updateProgress();
+  safeCreateIcons();
+}
+
+function goHome() {
+  renderHome();
+}
+
+function openTopic(ti) {
+  curTopic = ti;
+  curCase = 0;
+  document.getElementById('home-screen').classList.add('hidden');
+  document.getElementById('case-screen').classList.remove('hidden');
+  renderCase();
+}
+
+/* ===================== RENDERIZACIÓN DE LA UI DE CASOS ===================== */
+function renderCase() {
+  const topic = TOPICS[curTopic];
+  const c = topic.cases[curCase];
+  const doneKey = topic.id + '-' + curCase;
+  const isDone = done.has(doneKey);
+
+  // Renderizar pestañas de selección de caso
+  const tabs = document.getElementById('case-tabs');
+  tabs.innerHTML = '';
+  topic.cases.forEach((ca, i) => {
+    const isActive = i === curCase;
+    const hasDone = done.has(topic.id + '-' + i);
+    
+    const btn = document.createElement('button');
+    btn.className = `px-3.5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition border snap-center flex-shrink-0 ${
+      isActive 
+        ? 'bg-red-600 border-red-500 text-white shadow-lg shadow-red-900/20' 
+        : hasDone 
+          ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-400' 
+          : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+    }`;
+    btn.innerHTML = `${hasDone ? '✓ ' : ''}${ca.tag}`;
+    btn.onclick = () => { curCase = i; renderCase(); };
+    tabs.appendChild(btn);
+  });
+
+  // Generar bloque visual explicativo de la tabla de prioridad ILATE si corresponde
+  let ilateListHtml = '';
+  if (c.showIlateList) {
+    ilateListHtml = `
+      <div class="mt-3 bg-slate-950 p-4 border border-slate-800 rounded-xl w-full overflow-hidden">
+        <span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-2.5">📋 Prioridad Jerárquica ILATE (Para elegir tu "u")</span>
+        <div class="space-y-2 text-xs w-full">
+          <div class="flex items-start sm:items-center gap-2 text-slate-300">
+            <span class="w-5 h-5 bg-indigo-600/20 text-indigo-400 font-bold rounded flex items-center justify-center border border-indigo-500/30 flex-shrink-0 text-[10px]">I</span> 
+            <div class="flex flex-col sm:flex-row sm:gap-2 min-w-0">
+              <strong class="text-white w-24 flex-shrink-0">Inversas trig:</strong> <span class="truncate">$\\arcsin(x)$, $\\arctan(x)$, etc.</span>
+            </div>
+          </div>
+          <div class="flex items-start sm:items-center gap-2 text-slate-300">
+            <span class="w-5 h-5 bg-indigo-600/20 text-indigo-400 font-bold rounded flex items-center justify-center border border-indigo-500/30 flex-shrink-0 text-[10px]">L</span> 
+            <div class="flex flex-col sm:flex-row sm:gap-2 min-w-0">
+              <strong class="text-white w-24 flex-shrink-0">Logarítmicas:</strong> <span class="truncate">$\\ln(x)$, $\\log(x)$</span>
+            </div>
+          </div>
+          <div class="flex items-start sm:items-center gap-2 text-slate-300">
+            <span class="w-5 h-5 bg-indigo-600/20 text-indigo-400 font-bold rounded flex items-center justify-center border border-indigo-500/30 flex-shrink-0 text-[10px]">A</span> 
+            <div class="flex flex-col sm:flex-row sm:gap-2 min-w-0">
+              <strong class="text-white w-24 flex-shrink-0">Algebraicas:</strong> <span class="truncate">$x$, $x^2$, $3x^3$, etc.</span>
+            </div>
+          </div>
+          <div class="flex items-start sm:items-center gap-2 text-slate-300">
+            <span class="w-5 h-5 bg-indigo-600/20 text-indigo-400 font-bold rounded flex items-center justify-center border border-indigo-500/30 flex-shrink-0 text-[10px]">T</span> 
+            <div class="flex flex-col sm:flex-row sm:gap-2 min-w-0">
+              <strong class="text-white w-24 flex-shrink-0">Trigonométricas:</strong> <span class="truncate">$\\sin(x)$, $\\cos(x)$, $\\tan(x)$</span>
+            </div>
+          </div>
+          <div class="flex items-start sm:items-center gap-2 text-slate-300">
+            <span class="w-5 h-5 bg-indigo-600/20 text-indigo-400 font-bold rounded flex items-center justify-center border border-indigo-500/30 flex-shrink-0 text-[10px]">E</span> 
+            <div class="flex flex-col sm:flex-row sm:gap-2 min-w-0">
+              <strong class="text-white w-24 flex-shrink-0">Exponenciales:</strong> <span class="truncate">$e^x$, $2^x$</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Renderizar bloque teórico ultra amigable y enfocado en patrones
+  const theory = document.getElementById('case-theory');
+  theory.innerHTML = `
+    <!-- Hack de Reconocimiento Visual -->
+    <div class="p-4 bg-slate-900 border border-slate-800 rounded-2xl border-l-4 border-l-indigo-500 w-full">
+      <h4 class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1.5 flex items-center gap-1">
+        <i data-lucide="eye" class="w-3.5 h-3.5 flex-shrink-0"></i> 👁️ Hack Visual (¿Cómo la reconozco?)
+      </h4>
+      <p class="text-xs text-slate-300 leading-relaxed font-medium">${c.hack}</p>
+    </div>
+
+    <!-- El Peligro (Evita el cero) -->
+    <div class="p-4 bg-red-950/20 border border-red-900/30 rounded-2xl border-l-4 border-l-red-500 w-full">
+      <h4 class="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1.5 flex items-center gap-1">
+        <i data-lucide="alert-triangle" class="w-3.5 h-3.5 flex-shrink-0"></i> ⚠️ El Peligro del Examen
+      </h4>
+      <p class="text-xs text-slate-300 leading-relaxed font-semibold">${c.danger}</p>
+    </div>
+
+    <!-- Pista del tema -->
+    <div class="p-3.5 bg-amber-500/5 border border-amber-500/20 rounded-xl space-y-2 w-full">
+      <div class="flex gap-2.5 items-start">
+        <span class="text-lg leading-none">💡</span>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          <strong class="text-amber-400 font-bold">Truco rápido:</strong> ${c.tip}
+        </p>
+      </div>
+      ${ilateListHtml}
+    </div>
+
+    <!-- Fórmula central -->
+    <div class="p-4 bg-slate-950 border border-slate-850 rounded-2xl text-center w-full overflow-x-auto">
+      <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Estrategia Matemática</h4>
+      <div class="text-sm md:text-base font-semibold text-indigo-400 py-1 select-all">${c.formula}</div>
+    </div>
+
+    <!-- Pasos Mental Express -->
+    <div class="p-4 bg-slate-900/40 border border-slate-800 rounded-2xl space-y-3 w-full">
+      <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1">
+        <i data-lucide="list-checks" class="w-3.5 h-3.5 text-indigo-400 flex-shrink-0"></i> 🧠 El algoritmo mental (Ruta rápida)
+      </h4>
+      <div class="space-y-2.5">
+        ${c.steps.map((step, index) => `
+          <div class="flex gap-2.5 items-start">
+            <span class="w-5 h-5 rounded-full bg-slate-950 border border-slate-800 text-[10px] font-bold text-indigo-400 flex items-center justify-center flex-shrink-0 mt-0.5">${index + 1}</span>
+            <p class="text-xs text-slate-300 leading-relaxed">${step}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  // Botón marcar completado
+  const markBtn = document.getElementById('mark-btn');
+  if (isDone) {
+    markBtn.className = "px-4 py-2.5 rounded-xl border font-bold text-xs transition flex justify-center items-center gap-1.5 bg-emerald-950/20 border-emerald-500/30 text-emerald-400 w-full sm:w-auto";
+    markBtn.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> ¡Estudiado!';
+  } else {
+    markBtn.className = "px-4 py-2.5 rounded-xl border font-bold text-xs transition flex justify-center items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border-slate-800 text-slate-400 w-full sm:w-auto";
+    markBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Marcar como estudiado';
+  }
+
+  // Cerrar solución
+  solVisible = false;
+  document.getElementById('sol-content').className = 'hidden';
+  document.getElementById('sol-toggle').innerHTML = '<i data-lucide="eye" class="w-4 h-4"></i> Mostrar solución paso a paso';
+
+  // Cargar ejercicio por defecto (Local, instantáneo)
+  loadLocalExercise();
+  safeCreateIcons();
+}
+
+function loadLocalExercise() {
+  const topic = TOPICS[curTopic];
+  const c = topic.cases[curCase];
+  const caseKey = `${topic.id}-${curCase}`;
+  
+  currentProblem = c.gen(caseKey);
+  document.getElementById('problem-text').textContent = currentProblem.problema;
+  document.getElementById('source-badge').textContent = "Local";
+  document.getElementById('source-badge').className = "px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[9px] font-bold uppercase";
+  
+  if (solVisible) toggleSolution();
+  triggerMathJax();
+}
+
+/* ===================== FORMATEADOR DE CAMPO ACCION (TEXTO + LATEX INLINE) ===================== */
+function formatAccion(str) {
+  if (!str) return '';
+  return str
+    .replace(/•\s*/g, '<br><span class="text-indigo-400 font-bold">•</span> ')
+    .replace(/→/g, '<span class="text-amber-400"> → </span>');
+}
+
+/* ===================== CONTROL INTELIGENTE DE RENDERIZACIÓN MATEMÁTICA VS TEXTO PLANO ===================== */
+function formatField(str) {
+  if (!str) return '';
+  const trimmed = str.trim();
+  
+  if (trimmed.startsWith('$') || trimmed.startsWith('\\(') || trimmed.startsWith('\\[')) {
+    return trimmed;
+  }
+  
+  const isMath = /[\d+\-*\/^_\=\\\{\}\(\)\[\]]|\bsin\b|\bcos\b|\btan\b|\bsec\b|\bln\b|\btheta\b|\bint\b|\bcdot\b|\bimplies\b/i.test(trimmed);
+  
+  if (isMath) {
+    return '$$' + trimmed + '$$';
+  } else {
+    return `<span class="text-xs text-slate-300 font-sans tracking-wide leading-relaxed block">${trimmed}</span>`;
+  }
+}
+
+function triggerMathJax() {
+  if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+    setTimeout(() => {
+      MathJax.typesetPromise().catch(err => console.log('Error de MathJax:', err));
+    }, 10);
+  }
+}
+
+/* ===================== HISTORIAL GLOBAL IA PARA EVITAR DUPLICADOS ===================== */
+function addToAiHistory(problemExpression) {
+  try {
+    let history = JSON.parse(localStorage.getItem('calculo_supervivencia_ai_history') || '[]');
+    // Limpiar espacios para estandarizar la comparación de integrales
+    const cleanExpr = problemExpression.replace(/\s+/g, '').toLowerCase();
+    
+    if (!history.includes(cleanExpr)) {
+      history.push(cleanExpr);
+      // Mantener únicamente las últimas 8 para no saturar el prompt con exclusiones obsoletas
+      if (history.length > 8) {
+        history.shift();
+      }
+      localStorage.setItem('calculo_supervivencia_ai_history', JSON.stringify(history));
+    }
+  } catch (e) {
+    console.error('Error actualizando historial IA:', e);
+  }
+}
+
+function getAiHistoryList() {
+  try {
+    return JSON.parse(localStorage.getItem('calculo_supervivencia_ai_history') || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+/* ===================== INTEGRACIÓN CON GEMINI API ===================== */
+
+function getGeminiKey() {
+  return localStorage.getItem('gemini_api_key') || '';
+}
+
+function showKeyModal() {
+  const existing = getGeminiKey();
+  const modal = document.createElement('div');
+  modal.id = 'key-modal';
+  modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4';
+  modal.innerHTML = `
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 w-full max-w-sm space-y-4">
+      <div>
+        <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+          <i data-lucide="key" class="w-4 h-4 text-amber-400"></i> API Key de Gemini
+        </h3>
+        <p class="text-[11px] text-slate-400 leading-relaxed">
+          Gratis en <a href="https://aistudio.google.com/apikey" target="_blank" class="text-indigo-400 underline">aistudio.google.com/apikey</a>.<br>
+          Se guarda solo en tu navegador, nunca se envía a terceros.
+        </p>
+      </div>
+      <input id="key-input" type="password" placeholder="AIza..." value="${existing}"
+        class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-indigo-500 font-mono" />
+      <div class="flex gap-2">
+        <button onclick="saveKeyAndGenerate()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition">
+          Guardar y Generar ✨
+        </button>
+        <button onclick="document.getElementById('key-modal').remove()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs transition">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  safeCreateIcons();
+  setTimeout(() => document.getElementById('key-input')?.focus(), 100);
+}
+
+function saveKeyAndGenerate() {
+  const val = document.getElementById('key-input')?.value?.trim();
+  if (!val) return;
+  localStorage.setItem('gemini_api_key', val);
+  document.getElementById('key-modal')?.remove();
+  loadGeminiExercise();
+}
+
+async function loadGeminiExercise() {
+  const apiKey = getGeminiKey();
+  const exBox = document.getElementById('problem-text');
+  const cacheKey = `ai_supervivencia_cache_${TOPICS[curTopic].id}_${curCase}`;
+
+  // 1. REVISAR CACHÉ LOCAL
+  let cache = [];
+  try { cache = JSON.parse(localStorage.getItem(cacheKey) || '[]'); } catch(e) {}
+  if (cache.length > 0) {
+    currentProblem = cache.shift();
+    localStorage.setItem(cacheKey, JSON.stringify(cache));
+    addToAiHistory(currentProblem.problema);
+    exBox.textContent = currentProblem.problema;
+    document.getElementById('source-badge').textContent = `IA ✨ (Quedan ${cache.length} en caché)`;
+    document.getElementById('source-badge').className = "px-2 py-0.5 rounded bg-red-950 text-red-400 text-[9px] font-bold border border-red-900/40 uppercase";
+    if (solVisible) toggleSolution();
+    triggerMathJax();
+    return;
+  }
+
+  // 2. SI NO HAY KEY, PEDIR AL USUARIO
+  if (!apiKey) {
+    showKeyModal();
+    return;
+  }
+
+  // 3. GENERAR NUEVO LOTE (1 ejercicio para ahorrar cuota)
+  exBox.innerHTML = '<span class="text-xs text-indigo-400 flex items-center justify-center gap-1.5 animate-pulse"><i data-lucide="sparkles" class="w-4 h-4 flex-shrink-0"></i> Generando ejercicio con IA...</span>';
+  safeCreateIcons();
+
+  const previousExercises = getAiHistoryList();
+  const exclusionText = previousExercises.length > 0
+    ? `No repitas: ${previousExercises.join(', ')}.`
+    : '';
+
+  const isFraccionesParciales = TOPICS[curTopic].id === 'parc';
+  const fraccionesParcialesExtra = isFraccionesParciales
+    ? ` En el paso de hallar constantes: muestra cada sustitución de raíces críticas con su ecuación y resultado. Ej: "• x=2 → 5=B(5) → B=1. • x=-3 → 5=A(-5) → A=-1." Campo resultado: A=..., B=...`
+    : '';
+
+  const prompt = `Tutor de cálculo integral. Genera 1 ejercicio del caso: "${TOPICS[curTopic].cases[curCase].title}". ${exclusionText}${fraccionesParcialesExtra}
+Reglas: fracciones como \\frac{1}{2}x (coeficiente primero). "accion" en español con $math$ inline. Solo JSON puro sin markdown.
+{"lote":[{"problema":"$$\\int expr dx$$","pasos":[{"formula":"LaTeX","accion":"español con $math$","resultado":"LaTeX"}],"respuesta":"$$res+C$$"}]}`;
+
+  const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  // Si se abre como archivo local (file://) el navegador bloquea fetch directo → usamos proxy CORS
+  const isLocal = location.protocol === 'file:';
+  const url = isLocal
+    ? `https://corsproxy.io/?url=${encodeURIComponent(geminiEndpoint)}`
+    : geminiEndpoint;
+  const payload = {
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { responseMimeType: "application/json", maxOutputTokens: 1500 }
+  };
+
+  try {
+    let res = null;
+    let lastErr = '';
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        if (attempt > 0) await new Promise(r => setTimeout(r, 2000));
+        res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) break;
+        const errData = await res.json().catch(() => ({}));
+        lastErr = `HTTP ${res.status}: ${errData.error?.message || ''}`;
+        res = null;
+      } catch(e) {
+        lastErr = e.message;
+        res = null;
+      }
+    }
+
+    if (!res) throw new Error(lastErr || 'Sin respuesta.');
+
+    const data = await res.json();
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    if (!parsed.lote || parsed.lote.length === 0) throw new Error('Respuesta con formato inesperado.');
+
+    const lote = parsed.lote;
+    currentProblem = lote.shift();
+    localStorage.setItem(cacheKey, JSON.stringify(lote));
+    addToAiHistory(currentProblem.problema);
+    exBox.textContent = currentProblem.problema;
+    document.getElementById('source-badge').textContent = `IA ✨`;
+    document.getElementById('source-badge').className = "px-2 py-0.5 rounded bg-red-950 text-red-400 text-[9px] font-bold border border-red-900/40 uppercase";
+    if (solVisible) toggleSolution();
+    triggerMathJax();
+
+  } catch (error) {
+    const isQuota = error.message.includes('429') || error.message.includes('quota');
+    exBox.innerHTML = `
+      <div class="text-xs text-red-400 p-3 text-center space-y-2">
+        <div>${isQuota ? '⚠️ Cuota de API agotada.' : 'Error IA: ' + error.message}</div>
+        ${isQuota ? '<div class="text-[10px] text-amber-400">Genera una nueva key gratis en <a href=\'https://aistudio.google.com/apikey\' target=\'_blank\' class=\'underline\'>aistudio.google.com</a></div>' : ''}
+        <button onclick="localStorage.removeItem(\'gemini_api_key\'); showKeyModal();"
+          class="px-3 py-1.5 bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg text-[10px] font-bold transition">
+          Cambiar API Key
+        </button>
+      </div>`;
+  }
+}
+
+/* ===================== PANEL DE DESGLOSE DE SOLUCIÓN ===================== */
+function toggleSolution() {
+  if (!currentProblem) return;
+  solVisible = !solVisible;
+  const content = document.getElementById('sol-content');
+  const btn = document.getElementById('sol-toggle');
+
+  if (solVisible) {
+    btn.innerHTML = '<i data-lucide="eye-off" class="w-4 h-4"></i> Ocultar solución';
+    
+    const stepsHtml = currentProblem.pasos.map((paso, idx) => `
+      <div class="bg-slate-950 border border-slate-800 p-3 md:p-3.5 rounded-xl space-y-2 relative overflow-hidden w-full">
+        <div class="flex items-start gap-2">
+          <span class="w-5 h-5 bg-indigo-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">${idx + 1}</span>
+          <div class="text-xs font-semibold text-slate-200 leading-relaxed pr-1 overflow-x-auto">${formatAccion(paso.accion)}</div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pt-1 w-full">
+          <div class="bg-indigo-950/20 border border-indigo-900/40 px-3 py-2 rounded-lg w-full overflow-x-auto">
+            <span class="text-[9px] font-bold tracking-wider text-slate-400 block uppercase mb-0.5">Fórmula Aplicada</span>
+            <div class="text-xs text-indigo-300 font-semibold py-1">${formatField(paso.formula)}</div>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 px-3 py-2 rounded-lg w-full overflow-x-auto">
+            <span class="text-[9px] font-bold tracking-wider text-slate-400 block uppercase mb-0.5">Resultado</span>
+            <div class="text-xs text-amber-400 font-semibold py-1">${formatField(paso.resultado)}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    content.innerHTML = `
+      <h5 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 mb-2">
+        <i data-lucide="compass" class="w-3.5 h-3.5 text-indigo-400 flex-shrink-0"></i> Desglose del Proceso Paso a Paso
+      </h5>
+      <div class="space-y-3 w-full">${stepsHtml}</div>
+      <div class="p-3 bg-emerald-950/20 border border-emerald-500/30 rounded-xl text-center w-full overflow-x-auto mt-4">
+        <span class="text-[9px] font-bold tracking-wider text-emerald-500 block uppercase mb-1">Respuesta Final del Examen</span>
+        <div class="font-sans text-sm md:text-base font-bold text-emerald-400 py-1">${formatField(currentProblem.respuesta)}</div>
+      </div>
+    `;
+    content.className = "mt-4 space-y-3 pt-4 border-t border-slate-800 block w-full";
+    
+    triggerMathJax();
+  } else {
+    btn.innerHTML = '<i data-lucide="eye" class="w-4 h-4"></i> Mostrar solución paso a paso';
+    content.className = "hidden";
+    content.innerHTML = "";
+  }
+  safeCreateIcons();
+}
+
+/* ===================== CONTROL DE GESTOS MÓVILES (ADAPTATIVO ANDROID / IPHONE) ===================== */
+function setupNavigationEvents() {
+  const container = document.body;
+
+  // Registrar inicio de toque táctil
+  container.addEventListener('touchstart', function(e) {
+    // No registrar gestos si el usuario está interactuando con campos de entrada (input)
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.closest('#config-panel')) {
+      return;
+    }
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+
+  // Registrar fin de toque táctil y calcular dirección del deslizamiento
+  container.addEventListener('touchend', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.closest('#config-panel')) {
+      return;
+    }
+    
+    // Evitar disparar cambios si estamos deslizando un bloque de scroll horizontal legítimo
+    const mathBlock = e.target.closest('.overflow-x-auto');
+    if (mathBlock) {
+      return;
+    }
+
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+
+    handleGesture();
+  }, { passive: true });
+
+  // Navegación mediante teclado físico (Teclas de flecha)
+  window.addEventListener('keydown', function(e) {
+    // No navegar con teclado si el usuario está escribiendo una integral en el input manual
+    if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+      return;
+    }
+
+    const screen = document.getElementById('case-screen');
+    if (screen && !screen.classList.contains('hidden')) {
+      if (e.key === 'ArrowRight') {
+        goNextCase();
+      } else if (e.key === 'ArrowLeft') {
+        goPrevCase();
+      }
+    }
+  });
+}
+
+function handleGesture() {
+  const diffX = touchEndX - touchStartX;
+  const diffY = touchEndY - touchStartY;
+
+  // Asegurar que el deslizamiento sea predominantemente horizontal y de una distancia de seguridad razonable
+  if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 75) {
+    const screen = document.getElementById('case-screen');
+    if (screen && !screen.classList.contains('hidden')) {
+      if (diffX < 0) {
+        // Deslizamiento hacia la izquierda -> Siguiente caso
+        goNextCase();
+      } else {
+        // Deslizamiento hacia la derecha -> Caso anterior
+        goPrevCase();
+      }
+    }
+  }
+}
+
+// Lógica de cambio de página adaptativa para gestos táctiles y teclado
+function goNextCase() {
+  const topic = TOPICS[curTopic];
+  if (curCase < topic.cases.length - 1) {
+    curCase++;
+    renderCase();
+    triggerHapticFeedback();
+  } else if (curTopic < TOPICS.length - 1) {
+    curTopic++;
+    curCase = 0;
+    renderCase();
+    triggerHapticFeedback();
+  } else {
+    goHome();
+    triggerHapticFeedback();
+  }
+}
+
+function goPrevCase() {
+  if (curCase > 0) {
+    curCase--;
+    renderCase();
+    triggerHapticFeedback();
+  } else if (curTopic > 0) {
+    curTopic--;
+    const prevTopic = TOPICS[curTopic];
+    curCase = prevTopic.cases.length - 1;
+    renderCase();
+    triggerHapticFeedback();
+  }
+}
+
+// Vibración táctil corta de éxito en Android/iOS (si el navegador lo permite)
+function triggerHapticFeedback() {
+  if (navigator.vibrate) {
+    navigator.vibrate(12); 
+  }
+}
+
+/* ===================== CONTROL DE EVENTOS Y FLUJO ===================== */
+function markDone() {
+  const doneKey = TOPICS[curTopic].id + '-' + curCase;
+  const btn = document.getElementById('mark-btn');
+  
+  if (done.has(doneKey)) {
+    done.delete(doneKey);
+    btn.className = "px-4 py-2.5 rounded-xl border font-bold text-xs transition flex justify-center items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border-slate-800 text-slate-400 w-full sm:w-auto";
+    btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Marcar como estudiado';
+  } else {
+    done.add(doneKey);
+    btn.className = "px-4 py-2.5 rounded-xl border font-bold text-xs transition flex justify-center items-center gap-1.5 bg-emerald-950/20 border-emerald-500/30 text-emerald-400 w-full sm:w-auto";
+    btn.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> ¡Estudiado!';
+  }
+  
+  saveDoneState();
+  updateProgress();
+  safeCreateIcons();
+}
+
+function goNext() {
+  goNextCase();
+}
+
+function analyzeManual() {
+  const input = document.getElementById('manual-input');
+  const result = document.getElementById('manual-result');
+  const val = input.value.trim();
+  
+  if (!val) {
+    result.classList.add('hidden');
+    return;
+  }
+
+  const hints = detectMethod(val);
+  result.innerHTML = `
+    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Análisis exprés de la integral:</div>
+    <div class="font-sans text-sm text-indigo-400 font-semibold mb-2.5 select-all w-full overflow-x-auto">$$\\int ${val} dx$$</div>
+    <div class="space-y-2 w-full">
+      ${hints.map(h => `
+        <div class="p-2.5 bg-slate-950 border border-slate-850 rounded-lg w-full">
+          <strong class="text-xs text-amber-400 block font-semibold mb-0.5">🚀 Aplica: ${h.m}</strong>
+          <span class="text-[11px] text-slate-300 leading-relaxed block">${h.why}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  result.classList.remove('hidden');
+  
+  triggerMathJax();
+}
+</script>
+</body>
+</html>
