@@ -1289,12 +1289,7 @@ async function loadGeminiExercise() {
 Reglas: fracciones como \\frac{1}{2}x (coeficiente primero). "accion" en español con $math$ inline. Solo JSON puro sin markdown.
 {"lote":[{"problema":"$$\\int expr dx$$","pasos":[{"formula":"LaTeX","accion":"español con $math$","resultado":"LaTeX"}],"respuesta":"$$res+C$$"}]}`;
 
-  const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-  // Si se abre como archivo local (file://) el navegador bloquea fetch directo → usamos proxy CORS
-  const isLocal = location.protocol === 'file:';
-  const url = isLocal
-    ? `https://corsproxy.io/?url=${encodeURIComponent(geminiEndpoint)}`
-    : geminiEndpoint;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
   const payload = {
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: { responseMimeType: "application/json", maxOutputTokens: 1500 }
