@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
-<title>🚨 Guía de Supervivencia: Cálculo Integral v3</title>
+<title>V4 🚨 Guía de Supervivencia: Cálculo Integral</title>
 <!-- Tailwind CSS para diseño moderno -->
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- Iconos Lucide para la UI -->
@@ -1285,14 +1285,19 @@ async function loadGeminiExercise() {
     ? ` En el paso de hallar constantes: muestra cada sustitución de raíces críticas con su ecuación y resultado. Ej: "• x=2 → 5=B(5) → B=1. • x=-3 → 5=A(-5) → A=-1." Campo resultado: A=..., B=...`
     : '';
 
-  const prompt = `Tutor de cálculo integral. Genera 1 ejercicio del caso: "${TOPICS[curTopic].cases[curCase].title}". ${exclusionText}${fraccionesParcialesExtra}
-Reglas: fracciones como \\frac{1}{2}x (coeficiente primero). "accion" en español con $math$ inline. Solo JSON puro sin markdown.
-{"lote":[{"problema":"$$\\int expr dx$$","pasos":[{"formula":"LaTeX","accion":"español con $math$","resultado":"LaTeX"}],"respuesta":"$$res+C$$"}]}`;
+  const prompt = `Genera 1 ejercicio de integración del caso: "${TOPICS[curTopic].cases[curCase].title}". ${exclusionText}${fraccionesParcialesExtra}
+Reglas estrictas:
+- "accion": máximo 2 oraciones en español. Usa $math$ para expresiones.
+- "formula": LaTeX puro, sin texto.
+- "resultado": LaTeX puro, sin texto.
+- Fracciones: \\frac{1}{2}x^2 (coeficiente primero).
+- SOLO JSON, sin markdown, sin texto extra antes o después.
+{"lote":[{"problema":"$$\\int expr\\,dx$$","pasos":[{"formula":"LaTeX","accion":"explicación corta con $math$","resultado":"LaTeX"}],"respuesta":"$$resultado+C$$"}]}`;
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
   const payload = {
     contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: { responseMimeType: "application/json", maxOutputTokens: 1500 }
+    generationConfig: { responseMimeType: "application/json", maxOutputTokens: 4000 }
   };
 
   try {
@@ -1320,8 +1325,27 @@ Reglas: fracciones como \\frac{1}{2}x (coeficiente primero). "accion" en españo
 
     const data = await res.json();
     const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
+    let clean = raw.replace(/```json|```/g, '').trim();
+    // Intentar reparar JSON cortado: cerrar strings y estructuras abiertas
+    let parsed;
+    try {
+      parsed = JSON.parse(clean);
+    } catch(e1) {
+      try {
+        // Buscar hasta el último objeto completo del lote
+        const lastBrace = clean.lastIndexOf('"}]}]}');
+        const lastAlt   = clean.lastIndexOf('"}]}]');
+        const cutAt = Math.max(lastBrace, lastAlt);
+        if (cutAt > 0) {
+          const attempt = clean.slice(0, cutAt) + (lastBrace > lastAlt ? '' : '}]}');
+          parsed = JSON.parse(attempt);
+        } else {
+          throw new Error('No se pudo reparar el JSON: ' + e1.message);
+        }
+      } catch(e2) {
+        throw new Error('JSON inválido: ' + e2.message);
+      }
+    }
 
     if (!parsed.lote || parsed.lote.length === 0) throw new Error('Respuesta con formato inesperado.');
 
